@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#18241e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DICA REMATES">
+<title>DICA REMATES</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pizarra:#1f2c25;--noche:#1f2c25;
+  --cal:#eef1ea;--cal2:rgba(238,241,234,.72);--linea:rgba(238,241,234,.2);--gis:rgba(238,241,234,.55);
+  --lima:#f4e285;--rojo:#f2a7a7;--panel:rgba(15,24,19,.42);--panel2:rgba(238,241,234,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{color:var(--cal);font-family:'Barlow Condensed',system-ui,sans-serif;font-size:16px;background:var(--pizarra);-webkit-tap-highlight-color:transparent}
+body::before{content:'';position:fixed;left:50%;top:58%;width:220px;height:220px;margin:-110px;border:2px solid rgba(238,241,234,.06);border-radius:50%;pointer-events:none}
+body::after{content:'';position:fixed;left:0;right:0;top:58%;border-top:2px solid rgba(238,241,234,.06);pointer-events:none}
+#app{position:relative;z-index:1}
+body.protegido{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select{font:inherit}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px calc(96px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:20;background:rgba(24,36,30,.95);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:2px solid var(--linea);padding-top:env(safe-area-inset-top)}
+.top{max-width:760px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.marca{font-weight:700;font-size:30px;letter-spacing:1px;line-height:1;display:flex;align-items:center;gap:10px}
+.marca b{color:var(--lima);font-weight:700}
+.balon{width:28px;height:28px;border-radius:50%;border:2.5px solid var(--cal);position:relative;flex:0 0 auto}
+.balon::after{content:'';position:absolute;inset:6px;background:var(--lima);clip-path:polygon(50% 0,100% 38%,82% 100%,18% 100%,0 38%)}
+.usuario{font-family:'Caveat',cursive;font-size:18px;color:var(--cal2);text-align:right;line-height:1.1}
+.usuario button{font-family:'Barlow Condensed',sans-serif;background:none;border:1.5px dashed var(--gis);border-radius:8px;padding:3px 8px;margin-top:3px;font-size:13px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1.5px dashed var(--gis);background:transparent;color:var(--cal2);border-radius:18px;padding:7px 14px;font-weight:600;font-size:15px;letter-spacing:.5px;white-space:nowrap}
+.chip.on{background:var(--cal);color:var(--pizarra);border:1.5px solid var(--cal)}
+.chip small{display:block;font-family:'Caveat',cursive;font-size:16px;font-weight:600;letter-spacing:0}
+.dias .chip{border-radius:14px;text-align:center;padding:5px 12px;min-width:66px}
+.estado{padding:14px;text-align:center;color:var(--cal2);font-size:15px}
+.card{position:relative;background:var(--panel);border:2px solid var(--gis);border-radius:10px 14px 8px 12px;padding:12px 14px 12px 18px;margin:12px 0;cursor:pointer;overflow:hidden;transition:transform .12s}
+.card:active{transform:scale(.99)}
+.card::before{content:'';position:absolute;top:0;bottom:0;left:0;width:5px;background:linear-gradient(var(--c1),var(--c1) 50%,var(--c2) 50%)}
+.meta{display:flex;justify-content:space-between;font-family:'Caveat',cursive;font-size:18px;color:var(--cal2);margin-bottom:8px}
+.eqs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.eq{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-weight:700;font-size:16px;line-height:1.15}
+.logo{width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.logo.g{width:72px;height:72px}
+.placa{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;letter-spacing:-.3px;border:2px solid var(--cal)}
+.vs{font-family:'Caveat',cursive;font-size:26px;color:var(--cal2);text-align:center;line-height:1}
+.vs.marcador{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--cal);font-size:34px}
+.vs small{display:block;font-family:'Caveat',cursive;font-size:18px;color:var(--cal2)}
+.proy{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;border-top:1.5px dashed var(--linea);padding-top:10px}
+.num{font-family:'Caveat',cursive;font-weight:700;font-size:34px;line-height:1;color:var(--lima)}
+.num small{font-size:21px;color:var(--cal);font-weight:600}
+.linea{border:1.5px solid var(--gis);border-radius:8px;padding:2px 12px 4px}
+.linea .num{font-size:30px;color:var(--cal)}
+.linea.prin{border-color:var(--lima)}
+.linea.prin .num{color:var(--lima)}
+.lbl{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--cal2)}
+.nota{font-family:'Caveat',cursive;font-size:18px;color:var(--cal2);line-height:1.2}
+.candado{font-family:'Caveat',cursive;font-size:19px;color:var(--cal2);text-align:center;margin-top:10px;border-top:1.5px dashed var(--linea);padding-top:8px}
+.volver{background:none;border:none;color:var(--lima);padding:10px 0;font-family:'Caveat',cursive;font-size:22px;min-height:44px}
+.hero{background:var(--panel);border:2px solid var(--gis);border-radius:6px;padding:16px 14px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px;border:2px solid var(--linea);border-radius:50%}
+.hero::after{content:'';position:absolute;left:50%;top:0;bottom:0;border-left:2px solid var(--linea)}
+.hero>*{position:relative;z-index:1}
+.bloque{background:var(--panel);border:2px solid var(--gis);border-radius:12px 8px 14px 10px;padding:14px;margin:14px 0}
+.bloque h3{font-weight:700;font-size:19px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center;margin-bottom:12px}
+.grid2 .num{font-size:54px}
+.segura{display:flex;flex-wrap:wrap;gap:8px}
+.tag{border:2px dashed var(--lima);color:var(--cal);border-radius:12px 8px 14px 10px;padding:6px 12px;font-weight:700;font-size:17px}
+.tag small{font-family:'Caveat',cursive;font-size:22px;color:var(--lima)}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--cal2);font-weight:600;text-align:center;padding:6px 4px;border-bottom:1.5px solid var(--linea)}
+td{text-align:center;padding:6px 4px;border-bottom:1px solid rgba(238,241,234,.1);font-variant-numeric:tabular-nums}
+td.alta{color:var(--pizarra);background:var(--lima);font-weight:700;border-radius:6px}
+td.seg{font-family:'Caveat',cursive;font-size:24px;font-weight:700;color:var(--lima)}
+td.seg small{font-size:18px;color:var(--cal)}
+.mercado{margin-bottom:14px}
+.mercado h4{font-size:15px;font-weight:700;margin-bottom:4px;color:var(--cal)}
+.ult{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(238,241,234,.1);font-size:15px}
+.ult img{width:22px;height:22px;object-fit:contain}
+.ult .lv{font-size:11px;color:var(--cal2);border:1px solid var(--linea);border-radius:5px;padding:1px 5px}
+.barra{height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-top:3px}
+.barra i{display:block;height:100%;background:var(--lima)}
+.aviso{font-size:15px;color:#ffd9a0;background:rgba(255,217,160,.08);border:1.5px dashed rgba(255,217,160,.5);border-radius:10px;padding:8px 10px;margin:10px 0}
+.btn{background:var(--lima);color:var(--pizarra);border:none;border-radius:12px;padding:12px 16px;font-weight:700;font-size:16px;letter-spacing:.5px}
+.btn.sec{background:transparent;color:var(--cal);border:1.5px dashed var(--gis)}
+.btn.chico{padding:6px 10px;font-size:14px;border-radius:9px}
+.fila-btns{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(24,36,30,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:2px solid var(--linea);padding-bottom:env(safe-area-inset-bottom)}
+nav .in{max-width:760px;margin:0 auto;display:flex}
+nav button{flex:1;background:none;border:none;padding:12px 4px;font-weight:700;font-size:15px;letter-spacing:.5px;color:var(--cal2)}
+nav button.on{color:var(--lima)}
+.pantalla{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:16px}
+.pantalla .marca{font-size:48px}
+.pantalla p{color:var(--cal2);max-width:420px;line-height:1.45;font-size:17px}
+.firma{font-family:'Caveat',cursive;font-size:18px;color:var(--cal2);text-align:center;padding:18px 0 6px}
+.form{display:grid;gap:8px}
+.form input,.form select{width:100%;background:rgba(0,0,0,.25);border:1.5px solid var(--gis);color:var(--cal);border-radius:10px;padding:10px}
+.form label{font-size:14px;color:var(--cal2);display:flex;align-items:center;gap:8px}
+.usr{border-bottom:1px solid var(--linea);padding:10px 0}
+.usr .n{font-weight:700;font-size:17px}
+.usr .d{font-size:13px;color:var(--cal2);margin:2px 0 6px}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:2px 7px;margin-left:6px}
+.pill.ok{background:var(--lima);color:var(--pizarra)}
+.pill.no{background:var(--rojo);color:var(--pizarra)}
+.pill.eq{background:#a7d3f2;color:var(--pizarra)}
+.pick{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--linea)}
+.pick .q{font-weight:700;font-size:17px}
+.pick .p{font-family:'Caveat',cursive;font-weight:700;font-size:32px;color:var(--lima);grid-row:span 2;align-self:center}
+.pick .s{font-size:13px;color:var(--cal2)}
+#marca-agua{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.07}
+.demo{background:var(--lima);color:var(--pizarra);text-align:center;font-size:13px;font-weight:700;padding:4px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="marca-agua"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* =========================================================
+   DICA REMATES — By: Ricardo Dionicio
+   Proyecciones de remates (totales y a puerta) con datos de ESPN
+   ========================================================= */
+
+/* ---------- 1. CONFIGURACIÓN (pega aquí la de tu proyecto Firebase) ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyDyQsdHuMh8oPRSH7uacNcwogRXmHh59Mc",
+  authDomain: "dica-remates.firebaseapp.com",
+  projectId: "dica-remates",
+  storageBucket: "dica-remates.firebasestorage.app",
+  messagingSenderId: "447436532434",
+  appId: "1:447436532434:web:7609aa1e42b274b5855b0b",
+  measurementId: "G-439NP97SQ9"
+};
+const ADMIN = 'ricardodica29@gmail.com';
+const EXENTOS = ['ricardodica29@gmail.com','kikedc907@gmail.com','maudg.1616@gmail.com','adri.santillan36@gmail.com'];
+const WHATSAPP_DEF = '7298812937';
+const MAX_DISP = 2;
+const DEMO = false;
+const TZ = 'America/Mexico_City';
+const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/soccer/';
+
+const LIGAS = [
+  {id:'mex.1', n:'Liga MX', c:'MX'},
+  {id:'eng.1', n:'Premier League', c:'ING'},
+  {id:'esp.1', n:'LaLiga', c:'ESP'},
+  {id:'ita.1', n:'Serie A', c:'ITA'},
+  {id:'usa.1', n:'MLS', c:'MLS'},
+  {id:'uefa.champions', n:'Champions League', c:'UCL'},
+  {id:'uefa.europa', n:'Europa League', c:'UEL'},
+  {id:'uefa.europa.conf', n:'Conference League', c:'UECL'}
+];
+// Ligas de apoyo: solo se cargan para tener historial de equipos que juegan torneos UEFA
+const APOYO = ['ger.1','fra.1','por.1','ned.1'];
+const nombreLiga = id => (LIGAS.find(l => l.id === id) || {n:id}).n;
+
+/* ---------- 2. MODELO DE PROYECCIÓN ---------- */
+// ==MODELO==
+// Promedio base de remates por equipo por partido [totales, a puerta]; se reemplaza poco a poco con los datos reales
+const BASE = {
+  'mex.1':[12.3,4.2], 'eng.1':[12.6,4.3], 'esp.1':[11.9,4.0], 'ita.1':[12.8,4.2], 'usa.1':[12.7,4.4],
+  'uefa.champions':[12.6,4.5], 'uefa.europa':[12.4,4.3], 'uefa.europa.conf':[12.5,4.3], def:[12.4,4.3]
+};
+const N_ULTIMOS = 10;   // partidos recientes que se usan por equipo
+const DECAY = 0.88;     // peso de cada partido hacia atrás (el más reciente pesa más)
+const K_SHRINK = 2.5;   // cuánto se jala hacia el promedio de la liga cuando hay pocos datos
+const LOCAL = 1.06, VISITA = 0.94; // ventaja de localía
+const DISP_T = 1.45, DISP_P = 1.25; // dispersión (varianza/media) para remates totales y a puerta
+
+function promedioLiga(partidos, liga){
+  let t=0,n=0,o=0,no=0;
+  for (const p of partidos){
+    if (p.liga !== liga || !p.stats) continue;
+    t += p.stats.local.tiros + p.stats.visita.tiros; n += 2;
+    if (p.stats.local.puerta != null && p.stats.visita.puerta != null){ o += p.stats.local.puerta + p.stats.visita.puerta; no += 2; }
+  }
+  const b = BASE[liga] || BASE.def, kb = 20;
+  return [(t + b[0]*kb)/(n + kb), (o + b[1]*kb)/(no + kb)];
+}
+
+// lista: partidos terminados del equipo, del más reciente al más antiguo
+function perfilEquipo(lista, id){
+  let W=0, at=0, df=0, Wp=0, ap=0, dp=0; const ult=[];
+  for (const p of lista){
+    if (!p.stats) continue;
+    const loc = p.local.id === id;
+    const yo = loc ? p.stats.local : p.stats.visita, el = loc ? p.stats.visita : p.stats.local;
+    const w = Math.pow(DECAY, ult.length);
+    W += w; at += w*yo.tiros; df += w*el.tiros;
+    if (yo.puerta != null && el.puerta != null){ Wp += w; ap += w*yo.puerta; dp += w*el.puerta; }
+    ult.push({fecha:p.fecha, liga:p.liga, rival: loc ? p.visita : p.local, local:loc,
+      tiros:yo.tiros, puerta:yo.puerta, contra:el.tiros, contraP:el.puerta});
+  }
+  return {W, Wp, at: W?at/W:null, df: W?df/W:null, ap: Wp?ap/Wp:null, dp: Wp?dp/Wp:null, ult, n:ult.length};
+}
+
+function encoger(v, w, L){ return v == null ? L : (v*w + L*K_SHRINK)/(w + K_SHRINK); }
+
+function proyectar(pl, pv, L){
+  const [Lt, Lp] = L;
+  const lt = encoger(pl.at,pl.W,Lt) * encoger(pv.df,pv.W,Lt) / Lt * LOCAL;
+  const vt = encoger(pv.at,pv.W,Lt) * encoger(pl.df,pl.W,Lt) / Lt * VISITA;
+  const lp = encoger(pl.ap,pl.Wp,Lp) * encoger(pv.dp,pv.Wp,Lp) / Lp * LOCAL;
+  const vp = encoger(pv.ap,pv.Wp,Lp) * encoger(pl.dp,pl.Wp,Lp) / Lp * VISITA;
+  return {local:{tiros:lt,puerta:lp}, visita:{tiros:vt,puerta:vp}, total:{tiros:lt+vt,puerta:lp+vp}, muestra:Math.min(pl.n,pv.n)};
+}
+
+// Probabilidad de que salgan MÁS remates que la línea (binomial negativa)
+function probMas(mu, disp, linea){
+  if (!(mu > 0)) return 0;
+  const v = mu*disp, r = mu*mu/(v - mu), p = r/(r + mu), k = Math.floor(linea);
+  let pk = Math.pow(p, r), cdf = pk;
+  for (let i = 0; i < k; i++){ pk = pk*(i + r)/(i + 1)*(1 - p); cdf += pk; }
+  return Math.max(0, Math.min(1, 1 - cdf));
+}
+
+function lineasPara(mu, paso, n){
+  const c = Math.floor(mu) + 0.5, out = [];
+  for (let i = -n; i <= n; i++){ const l = c + i*paso; if (l > 0) out.push(l); }
+  return out;
+}
+
+function mercados(pr, nl, nv){
+  return [
+    {clave:'tt', nombre:'Remates totales del partido', mu:pr.total.tiros, disp:DISP_T, lineas:lineasPara(pr.total.tiros,2,2)},
+    {clave:'pt', nombre:'Remates a puerta del partido', mu:pr.total.puerta, disp:DISP_P, lineas:lineasPara(pr.total.puerta,1,2)},
+    {clave:'tl', nombre:'Remates totales · '+nl, mu:pr.local.tiros, disp:DISP_T, lineas:lineasPara(pr.local.tiros,1,2)},
+    {clave:'tv', nombre:'Remates totales · '+nv, mu:pr.visita.tiros, disp:DISP_T, lineas:lineasPara(pr.visita.tiros,1,2)},
+    {clave:'pl', nombre:'Remates a puerta · '+nl, mu:pr.local.puerta, disp:DISP_P, lineas:lineasPara(pr.local.puerta,1,1)},
+    {clave:'pv', nombre:'Remates a puerta · '+nv, mu:pr.visita.puerta, disp:DISP_P, lineas:lineasPara(pr.visita.puerta,1,1)}
+  ].map(m => ({...m, filas: m.lineas.map(l => ({linea:l, mas:probMas(m.mu, m.disp, l)}))}));
+}
+
+// Línea segura: la línea más alta de "Más de" con al menos 70% de probabilidad
+function lineaSegura(mu, disp, minProb){
+  minProb = minProb || 0.70;
+  for (let l = Math.floor(mu) + 0.5; l > 0; l -= 1){
+    const pr = probMas(mu, disp, l);
+    if (pr >= minProb) return {linea:l, prob:pr};
+  }
+  return null;
+}
+// ==FIN MODELO==
+
+/* ---------- 3. UTILIDADES ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDia = d => new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+const hoyKey = () => fmtDia(new Date());
+function sumarDias(key, n){ const d = new Date(key + 'T12:00:00-06:00'); d.setUTCDate(d.getUTCDate() + n); return fmtDia(d); }
+const ymd = k => k.replace(/-/g,'');
+const horaMx = iso => new Intl.DateTimeFormat('es-MX',{timeZone:TZ,hour:'numeric',minute:'2-digit'}).format(new Date(iso));
+const fechaCorta = iso => new Intl.DateTimeFormat('es-MX',{timeZone:TZ,day:'numeric',month:'short'}).format(new Date(iso));
+function etiquetaDia(k){
+  const h = hoyKey();
+  if (k === h) return ['Hoy', fechaCorta(k + 'T12:00:00-06:00')];
+  if (k === sumarDias(h,1)) return ['Mañana', fechaCorta(k + 'T12:00:00-06:00')];
+  if (k === sumarDias(h,-1)) return ['Ayer', fechaCorta(k + 'T12:00:00-06:00')];
+  const d = new Date(k + 'T12:00:00-06:00');
+  const dia = new Intl.DateTimeFormat('es-MX',{timeZone:TZ,weekday:'short'}).format(d);
+  return [dia.charAt(0).toUpperCase() + dia.slice(1), fechaCorta(d)];
+}
+const f1 = x => (Math.round(x*10)/10).toFixed(1);
+const pct = x => Math.round(x*100) + '%';
+function lsGet(k){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e){ return null; } }
+function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+async function getJSON(url){ const r = await fetch(url); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }
+async function pool(items, n, fn, alAvanzar){
+  let i = 0, hechos = 0;
+  const trab = async () => { while (i < items.length){ const it = items[i++]; await fn(it); hechos++; if (alAvanzar) alAvanzar(hechos, items.length); } };
+  await Promise.all(Array.from({length: Math.min(n, items.length)}, trab));
+}
+function deviceId(){
+  let id = lsGet('dr_disp');
+  if (!id){ id = 'd' + Math.random().toString(36).slice(2) + Date.now().toString(36); lsSet('dr_disp', id); }
+  return id;
+}
+const waLink = (txt) => 'https://wa.me/52' + (S.config.whatsapp || WHATSAPP_DEF) + '?text=' + encodeURIComponent(txt || 'Hola Ricardo, quiero renovar DICA REMATES');
+function vencido(perfil){
+  if (!perfil || perfil.equipo || !perfil.vence) return false;
+  return Date.now() >= Date.parse(perfil.vence + 'T00:00:00-06:00'); // vence a las 12:00 am del día de vencimiento
+}
+
+/* ---------- 4. ESTADO ---------- */
+const S = {
+  usuario:null, perfil:null, esAdmin:false, exento:false,
+  config:{diasVisibles:2, whatsapp:WHATSAPP_DEF},
+  liga:'mex.1', dia:hoyKey(), vista:'partidos', detalle:null,
+  partidos:new Map(), cargadas:{}, cargando:false, progreso:'',
+  usuarios:[], picks:null
+};
+
+/* ---------- 5. DATOS ESPN ---------- */
+function leerStats(arr){
+  if (!arr || !arr.length) return null;
+  const m = {};
+  arr.forEach(s => { m[s.name] = parseFloat(s.displayValue != null ? s.displayValue : s.value); });
+  const t = m.totalShots, o = (m.shotsOnTarget != null ? m.shotsOnTarget : m.shotsOnGoal);
+  if (!isFinite(t)) return null;
+  return {tiros:t, puerta: isFinite(o) ? o : null};
+}
+function parseEvento(e, liga){
+  const c = e.competitions && e.competitions[0]; if (!c || !c.competitors) return null;
+  const h = c.competitors.find(x => x.homeAway === 'home'), a = c.competitors.find(x => x.homeAway === 'away');
+  if (!h || !a || !h.team || !a.team) return null;
+  const eq = x => ({id:String(x.team.id), nombre:x.team.shortDisplayName || x.team.displayName, abrev:x.team.abbreviation || '',
+    logo:x.team.logo || '', color:x.team.color || '1b5e20', alt:x.team.alternateColor || 'ffffff', goles:x.score});
+  const st = (c.status && c.status.type) || {};
+  let estado = st.state || 'pre';
+  if (/POSTPONED|CANCELED|CANCELLED|ABANDONED|SUSPENDED/.test(st.name || '')) estado = 'canc';
+  else if (estado === 'post' && st.completed === false) estado = 'canc';
+  const p = {id:String(e.id), liga, fecha:e.date, estado, detalle:st.shortDetail || '', local:eq(h), visita:eq(a), stats:null};
+  const sh = leerStats(h.statistics), sa = leerStats(a.statistics);
+  if (estado === 'post' && sh && sa) p.stats = {local:sh, visita:sa};
+  return p;
+}
+function guardar(p){
+  if (!p.stats && p.estado === 'post'){ const c = lsGet('dr_st_' + p.id); if (c) p.stats = c; }
+  const prev = S.partidos.get(p.id);
+  if (prev && prev.stats && !p.stats) p.stats = prev.stats;
+  S.partidos.set(p.id, p);
+}
+async function cargarLiga(liga, forzar){
+  if (S.cargadas[liga] && !forzar) return;
+  const key = 'dr_sb_' + liga, c = lsGet(key);
+  if (!forzar && c && Date.now() - c.t < 30*60e3){ c.p.forEach(guardar); S.cargadas[liga] = true; return; }
+  const h = hoyKey();
+  const url = `${ESPN}${liga}/scoreboard?dates=${ymd(sumarDias(h,-80))}-${ymd(sumarDias(h,8))}&limit=1000`;
+  const j = await getJSON(url);
+  const lista = (j.events || []).map(e => parseEvento(e, liga)).filter(Boolean);
+  lista.forEach(guardar);
+  lsSet(key, {t:Date.now(), p:lista});
+  S.cargadas[liga] = true;
+}
+async function statsDeResumen(p){
+  const j = await getJSON(`${ESPN}${p.liga}/summary?event=${p.id}`);
+  const ts = (j.boxscore && j.boxscore.teams) || [];
+  const f = id => { const t = ts.find(x => x.team && String(x.team.id) === String(id)); return t ? leerStats(t.statistics) : null; };
+  const sl = f(p.local.id), sv = f(p.visita.id);
+  if (sl && sv){ p.stats = {local:sl, visita:sv}; lsSet('dr_st_' + p.id, p.stats); }
+  else p.sinStats = true;
+}
+function ultimos(id, n, antes){
+  return [...S.partidos.values()]
+    .filter(p => p.estado === 'post' && (p.local.id === id || p.visita.id === id) && (!antes || p.fecha < antes))
+    .sort((a,b) => b.fecha.localeCompare(a.fecha)).slice(0, n);
+}
+async function asegurarStats(ids){
+  const pend = new Set();
+  ids.forEach(id => ultimos(id, N_ULTIMOS + 2).forEach(p => { if (!p.stats && !p.sinStats) pend.add(p); }));
+  if (!pend.size) return;
+  await pool([...pend], 8, p => statsDeResumen(p).catch(() => { p.sinStats = true; }), (h,t) => {
+    S.progreso = `Bajando estadísticas ${h}/${t}…`; const e = $('#progreso'); if (e) e.textContent = S.progreso;
+  });
+  S.progreso = '';
+}
+async function prepararLiga(liga){
+  await cargarLiga(liga);
+  if (liga.startsWith('uefa.')) await Promise.all(APOYO.map(l => cargarLiga(l).catch(() => {})));
+}
+function proyeccionDe(p){
+  const pl = perfilEquipo(ultimos(p.local.id, N_ULTIMOS, p.fecha), p.local.id);
+  const pv = perfilEquipo(ultimos(p.visita.id, N_ULTIMOS, p.fecha), p.visita.id);
+  const L = promedioLiga(S.partidos.values(), p.liga);
+  return {pr: proyectar(pl, pv, L), pl, pv, L};
+}
+function partidosDelDia(liga, dia){
+  return [...S.partidos.values()]
+    .filter(p => (liga === 'todas' ? LIGAS.some(l => l.id === p.liga) : p.liga === liga) && fmtDia(new Date(p.fecha)) === dia)
+    .sort((a,b) => a.fecha.localeCompare(b.fecha));
+}
+function visible(p){
+  if (S.esAdmin) return true;
+  const h = hoyKey(), dia = fmtDia(new Date(p.fecha));
+  return dia <= sumarDias(h, (S.config.diasVisibles || 2) - 1);
+}
+
+/* ---------- 6. VISTAS ---------- */
+function escudo(eq, grande){
+  const cls = 'logo' + (grande ? ' g' : '');
+  if (eq.logo) return `<img class="${cls}" src="${esc(eq.logo)}" alt="" loading="lazy" onerror="this.outerHTML='${placaTxt(eq)}'">`;
+  return placaHtml(eq);
+}
+function placaHtml(eq){ return `<div class="placa" style="background:#${esc(eq.color)};color:#${esc(eq.alt)}">${esc(eq.abrev)}</div>`; }
+function placaTxt(eq){ return placaHtml(eq).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+function render(){
+  const app = $('#app');
+  const demo = DEMO ? '<div class="demo">MODO DEMO · conecta Firebase para activar usuarios y suscripciones</div>' : '';
+  const nombre = S.perfil && S.perfil.nombre ? S.perfil.nombre : (S.usuario ? S.usuario.email : '');
+  let cuerpo = '';
+  if (S.vista === 'detalle' && S.detalle) cuerpo = vistaDetalle();
+  else if (S.vista === 'picks') cuerpo = vistaPicks();
+  else if (S.vista === 'admin') cuerpo = vistaAdmin();
+  else cuerpo = vistaPartidos();
+  app.innerHTML = `${demo}
+  <header><div class="top">
+    <div class="marca"><span class="balon"></span>DICA <b>REMATES</b></div>
+    <div class="usuario">${esc(nombre)}${S.perfil && S.perfil.vence && !S.perfil.equipo ? '<br>Vence: ' + esc(S.perfil.vence) : ''}
+      ${DEMO ? '' : '<br><button onclick="salir()">Salir</button>'}</div>
+  </div></header>
+  <div class="wrap">${cuerpo}<div class="firma">By: Ricardo Dionicio · datos de ESPN · las proyecciones son estimaciones, no garantías</div></div>
+  ${S.esAdmin ? `<nav><div class="in">
+    <button class="${S.vista==='partidos'||S.vista==='detalle'?'on':''}" onclick="ir('partidos')">Partidos</button>
+    <button class="${S.vista==='picks'?'on':''}" onclick="ir('picks')">Picks</button>
+    <button class="${S.vista==='admin'?'on':''}" onclick="ir('admin')">Admin</button>
+  </div></nav>` : ''}`;
+}
+function chipsLigas(){
+  const ls = [{id:'todas', n:'Todas'}].concat(LIGAS);
+  return `<div class="chips">${ls.map(l => `<button class="chip ${S.liga===l.id?'on':''}" onclick="elegirLiga('${l.id}')">${esc(l.n)}</button>`).join('')}</div>`;
+}
+function chipsDias(){
+  const h = hoyKey(), dias = [];
+  for (let i = -1; i <= 6; i++) dias.push(sumarDias(h, i));
+  return `<div class="chips dias">${dias.map(d => { const [a,b] = etiquetaDia(d);
+    return `<button class="chip ${S.dia===d?'on':''}" onclick="elegirDia('${d}')">${esc(a)}<small>${esc(b)}</small></button>`; }).join('')}</div>`;
+}
+function vistaPartidos(){
+  let html = chipsLigas() + chipsDias();
+  if (S.cargando) return html + `<div class="estado" id="progreso">${esc(S.progreso || 'Cargando partidos…')}</div>`;
+  if (S.error) return html + `<div class="estado">No se pudieron cargar los datos de ESPN (${esc(S.error)}).<br><br><button class="btn sec" onclick="recargar()">Reintentar</button></div>`;
+  const ps = partidosDelDia(S.liga, S.dia);
+  if (!ps.length) return html + `<div class="estado">No hay partidos ${S.liga==='todas'?'':'de ' + esc(nombreLiga(S.liga)) + ' '}este día.</div>`;
+  return html + ps.map(tarjeta).join('');
+}
+function tarjeta(p){
+  const centro = (p.estado === 'post' || p.estado === 'in')
+    ? `<div class="vs marcador">${esc(p.local.goles)}-${esc(p.visita.goles)}<small>${esc(p.estado==='in'?p.detalle:'Final')}</small></div>`
+    : `<div class="vs">VS<small>${p.estado==='canc'?'Pospuesto':esc(horaMx(p.fecha))}</small></div>`;
+  let pie;
+  if (!visible(p)) pie = `<div class="candado">🔒 La proyección se abre ${S.config.diasVisibles>1?'un día antes del partido':'el día del partido'}</div>`;
+  else {
+    const {pr} = proyeccionDe(p);
+    pie = `<div class="proy">${chipLinea('Remates', lineaSegura(pr.total.tiros, DISP_T), true)}${chipLinea('A puerta', lineaSegura(pr.total.puerta, DISP_P), false)}</div>`;
+  }
+  return `<div class="card" style="--c1:#${esc(p.local.color)};--c2:#${esc(p.visita.color)}" onclick="abrir('${p.id}')">
+    <div class="meta"><span>${esc(nombreLiga(p.liga))}</span><span>${esc(fechaCorta(p.fecha))}</span></div>
+    <div class="eqs"><div class="eq">${escudo(p.local)}<span>${esc(p.local.nombre)}</span></div>${centro}
+    <div class="eq">${escudo(p.visita)}<span>${esc(p.visita.nombre)}</span></div></div>${pie}</div>`;
+}
+function chipLinea(lbl, s, prin){
+  return `<div class="linea ${prin ? 'prin' : ''}"><div class="lbl">${lbl}</div><div class="num">${s ? '+' + s.linea : '–'} <small>${s ? pct(s.prob) : ''}</small></div></div>`;
+}
+const segTxt = s => s ? `+${s.linea} <small>${pct(s.prob)}</small>` : '–';
+function vistaDetalle(){
+  const p = S.partidos.get(S.detalle);
+  if (!p) return '<button class="volver" onclick="ir(\'partidos\')">← Partidos</button>';
+  const volver = '<button class="volver" onclick="ir(\'partidos\')">← pizarra</button>';
+  const cab = `<div class="hero"><div class="meta"><span>${esc(nombreLiga(p.liga))}</span><span>${esc(fechaCorta(p.fecha))} · ${esc(horaMx(p.fecha))}</span></div>
+    <div class="eqs"><div class="eq">${escudo(p.local,true)}<span>${esc(p.local.nombre)}</span></div>
+    ${p.estado==='post'||p.estado==='in' ? `<div class="vs marcador">${esc(p.local.goles)}-${esc(p.visita.goles)}</div>` : '<div class="vs">VS</div>'}
+    <div class="eq">${escudo(p.visita,true)}<span>${esc(p.visita.nombre)}</span></div></div></div>`;
+  if (!visible(p)) return volver + cab + `<div class="bloque estado">🔒 Esta proyección todavía no está disponible.</div>`;
+  const {pr, pl, pv} = proyeccionDe(p);
+  const ms = mercados(pr, p.local.nombre, p.visita.nombre);
+  const sT = lineaSegura(pr.total.tiros, DISP_T), sP = lineaSegura(pr.total.puerta, DISP_P);
+  const real = p.stats ? `<div class="aviso" style="color:var(--cal);background:var(--panel2);border-color:var(--linea)">Resultado real: ${p.stats.local.tiros + p.stats.visita.tiros} remates · ${(p.stats.local.puerta||0) + (p.stats.visita.puerta||0)} a puerta</div>` : '';
+  const pocos = pr.muestra < 4 ? `<div class="aviso">Hay pocos partidos con datos de uno de los equipos (${pr.muestra}). Toma esta proyección con cautela.</div>` : '';
+  return volver + cab + pocos + real + `
+  <div class="bloque"><h3>Proyección DICA</h3>
+    <div class="grid2">
+      <div><div class="lbl">Línea justa remates</div><div class="num">${Math.floor(pr.total.tiros) + 0.5}</div><div class="nota">promedio esperado ${f1(pr.total.tiros)}</div></div>
+      <div><div class="lbl">Línea justa a puerta</div><div class="num" style="color:var(--cal)">${Math.floor(pr.total.puerta) + 0.5}</div><div class="nota">promedio esperado ${f1(pr.total.puerta)}</div></div>
+    </div>
+    <table><tr><th style="text-align:left">Equipo · 70%+</th><th>Remates</th><th>A puerta</th></tr>
+      <tr><td style="text-align:left">${esc(p.local.nombre)}</td><td class="seg">${segTxt(lineaSegura(pr.local.tiros, DISP_T))}</td><td class="seg">${segTxt(lineaSegura(pr.local.puerta, DISP_P))}</td></tr>
+      <tr><td style="text-align:left">${esc(p.visita.nombre)}</td><td class="seg">${segTxt(lineaSegura(pr.visita.tiros, DISP_T))}</td><td class="seg">${segTxt(lineaSegura(pr.visita.puerta, DISP_P))}</td></tr>
+    </table>
+    <div class="nota" style="margin-top:8px">Línea justa: donde Más y Menos quedan casi 50/50. Si tu casa pone una línea más baja, el Más tiene valor.</div>
+  </div>
+  <div class="bloque"><h3>Líneas seguras del partido (70%+)</h3><div class="segura">
+    ${sT ? `<span class="tag">Más de ${sT.linea} remates <small>${pct(sT.prob)}</small></span>` : ''}
+    ${sP ? `<span class="tag">Más de ${sP.linea} a puerta <small>${pct(sP.prob)}</small></span>` : ''}
+  </div></div>
+  <div class="bloque"><h3>Probabilidad por línea</h3>
+    ${ms.map(m => `<div class="mercado"><h4>${esc(m.nombre)} <span class="nota">· promedio ${f1(m.mu)}</span></h4><table>
+      <tr><th>Línea</th><th>Más de</th><th>Menos de</th></tr>
+      ${m.filas.map(f => `<tr><td>${f.linea}</td><td class="${f.mas>=.6?'alta':''}">${pct(f.mas)}</td><td class="${1-f.mas>=.6?'alta':''}">${pct(1-f.mas)}</td></tr>`).join('')}
+    </table></div>`).join('')}
+  </div>
+  ${bloqueUltimos(p.local, pl)}${bloqueUltimos(p.visita, pv)}
+  ${S.esAdmin ? `<div class="fila-btns"><button class="btn" onclick="imagenPartido('${p.id}')">Imagen para redes</button></div>` : ''}`;
+}
+function bloqueUltimos(eq, perfil){
+  if (!perfil.n) return `<div class="bloque"><h3>${esc(eq.nombre)}</h3><div class="estado">Sin partidos con estadísticas todavía.</div></div>`;
+  const max = Math.max(...perfil.ult.map(u => Math.max(u.tiros, u.contra)), 1);
+  return `<div class="bloque"><h3>${esc(eq.nombre)} · últimos ${perfil.n}</h3>
+    <div class="lbl" style="margin-bottom:6px">Promedio: ${f1(perfil.at)} remates a favor (${perfil.ap!=null?f1(perfil.ap):'–'} a puerta) · ${f1(perfil.df)} en contra</div>
+    ${perfil.ult.map(u => `<div class="ult">
+      ${u.rival.logo ? `<img src="${esc(u.rival.logo)}" alt="">` : '<span></span>'}
+      <div>${esc(u.rival.nombre)} <span class="lv">${u.local?'L':'V'}</span><div class="barra"><i style="width:${Math.round(u.tiros/max*100)}%"></i></div></div>
+      <div><b>${u.tiros}</b> <span class="lbl">(${u.puerta!=null?u.puerta:'–'})</span></div>
+      <div class="lbl">vs ${u.contra}</div></div>`).join('')}
+    <div class="lbl" style="margin-top:6px">Remates a favor (a puerta) · remates del rival</div></div>`;
+}
+
+/* ---------- 7. PICKS E IMÁGENES (solo admin) ---------- */
+function vistaPicks(){
+  let html = chipsDias() + `<div class="fila-btns"><button class="btn" onclick="generarPicks()">Generar picks del día</button>
+    ${S.picks && S.picks.lista.length ? '<button class="btn sec" onclick="imagenPicks()">Imagen para redes</button>' : ''}</div>`;
+  if (S.cargando) return html + `<div class="estado" id="progreso">${esc(S.progreso || 'Cargando…')}</div>`;
+  if (!S.picks || S.picks.dia !== S.dia) return html + '<div class="estado">Toca "Generar picks del día" para revisar las 8 ligas.</div>';
+  if (!S.picks.lista.length) return html + '<div class="estado">No hay partidos pendientes ese día.</div>';
+  return html + '<div class="bloque">' + S.picks.lista.map(k => `<div class="pick">
+      <div class="q">${esc(k.texto)}</div><div class="p">${pct(k.prob)}</div>
+      <div class="s">${esc(k.partido)} · ${esc(nombreLiga(k.liga))} · ${esc(horaMx(k.fecha))} · proy. ${f1(k.mu)}</div></div>`).join('') + '</div>';
+}
+async function generarPicks(){
+  S.cargando = true; S.progreso = 'Cargando las 8 ligas…'; render();
+  try {
+    await Promise.all(LIGAS.map(l => prepararLiga(l.id).catch(() => {})));
+    const ps = partidosDelDia('todas', S.dia).filter(p => p.estado === 'pre');
+    const ids = new Set(); ps.forEach(p => { ids.add(p.local.id); ids.add(p.visita.id); });
+    await asegurarStats([...ids]);
+    const lista = [];
+    ps.forEach(p => {
+      const {pr} = proyeccionDe(p); if (pr.muestra < 3) return;
+      const nom = p.local.nombre + ' vs ' + p.visita.nombre;
+      const sT = lineaSegura(pr.total.tiros, DISP_T, .72), sP = lineaSegura(pr.total.puerta, DISP_P, .72);
+      if (sT) lista.push({texto:`Más de ${sT.linea} remates`, prob:sT.prob, mu:pr.total.tiros, partido:nom, liga:p.liga, fecha:p.fecha});
+      if (sP) lista.push({texto:`Más de ${sP.linea} remates a puerta`, prob:sP.prob, mu:pr.total.puerta, partido:nom, liga:p.liga, fecha:p.fecha});
+    });
+    lista.sort((a,b) => a.fecha.localeCompare(b.fecha));
+    S.picks = {dia:S.dia, lista};
+  } finally { S.cargando = false; render(); }
+}
+function lienzo(alto){
+  const c = document.createElement('canvas'); c.width = 1080; c.height = alto; const x = c.getContext('2d');
+  x.fillStyle = '#1f2c25'; x.fillRect(0,0,1080,alto);
+  x.strokeStyle = 'rgba(238,241,234,.12)'; x.lineWidth = 4; x.strokeRect(40,40,1000,alto-80);
+  x.beginPath(); x.arc(540, alto/2, 170, 0, Math.PI*2); x.stroke();
+  x.beginPath(); x.moveTo(40, alto/2); x.lineTo(1040, alto/2); x.stroke();
+  x.fillStyle = '#eef1ea'; x.font = '700 92px "Barlow Condensed"'; x.textAlign = 'center';
+  x.fillText('DICA', 400, 180); x.fillStyle = '#f4e285'; x.fillText('REMATES', 640, 180);
+  return [c, x];
+}
+function pie(x, alto){ x.fillStyle = 'rgba(238,241,234,.75)'; x.font = '700 40px Caveat'; x.textAlign = 'center'; x.fillText('By: Ricardo Dionicio', 540, alto - 100); }
+function descargar(c, nombre){
+  try { c.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = nombre; a.click(); }); }
+  catch(e){ alert('No se pudo generar la imagen: ' + e.message); }
+}
+async function imagenPicks(){
+  await document.fonts.ready;
+  const n = Math.min(S.picks.lista.length, 10), alto = 360 + n*110 + 160;
+  const [c, x] = lienzo(alto);
+  const [a, b] = etiquetaDia(S.dia);
+  x.fillStyle = '#eef1ea'; x.font = '700 46px Caveat'; x.fillText(`Picks de remates · ${a} ${b}`, 540, 250);
+  S.picks.lista.slice(0, n).forEach((k, i) => {
+    const y = 340 + i*110; x.textAlign = 'left';
+    x.fillStyle = '#eef1ea'; x.font = '700 40px "Barlow Condensed"'; x.fillText(k.texto, 110, y);
+    x.fillStyle = 'rgba(238,241,234,.7)'; x.font = '600 30px "Barlow Condensed"'; x.fillText(`${k.partido} · ${horaMx(k.fecha)}`, 110, y + 40);
+    x.textAlign = 'right'; x.fillStyle = '#f4e285'; x.font = '700 72px Caveat'; x.fillText(pct(k.prob), 970, y + 20);
+  });
+  pie(x, alto); descargar(c, `dica-remates-picks-${S.dia}.png`);
+}
+async function imagenPartido(id){
+  await document.fonts.ready;
+  const p = S.partidos.get(id), {pr} = proyeccionDe(p), alto = 1350;
+  const [c, x] = lienzo(alto);
+  const cargar = src => new Promise(r => { if (!src) return r(null); const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => r(im); im.onerror = () => r(null); im.src = src; });
+  const [il, iv] = await Promise.all([cargar(p.local.logo), cargar(p.visita.logo)]);
+  const dibujar = (conLogos) => {
+    const [c2, y] = conLogos ? [c, x] : lienzo(alto);
+    y.textAlign = 'center'; y.fillStyle = 'rgba(238,241,234,.75)'; y.font = '700 42px Caveat';
+    y.fillText(`${nombreLiga(p.liga)} · ${fechaCorta(p.fecha)} · ${horaMx(p.fecha)}`, 540, 250);
+    if (conLogos){ if (il) y.drawImage(il, 190, 300, 200, 200); if (iv) y.drawImage(iv, 690, 300, 200, 200); }
+    y.fillStyle = '#eef1ea'; y.font = '700 44px "Barlow Condensed"';
+    y.fillText(p.local.nombre, 290, 560); y.fillText(p.visita.nombre, 790, 560);
+    y.font = '700 90px Caveat'; y.fillStyle = 'rgba(238,241,234,.6)'; y.fillText('vs', 540, 430);
+    const L = s => s ? '+' + s.linea : '–', P = s => s ? pct(s.prob) : '';
+    const fila = (ytxt, etiqueta, a, t, b) => {
+      y.fillStyle = 'rgba(238,241,234,.75)'; y.font = '600 32px "Barlow Condensed"'; y.fillText(etiqueta, 540, ytxt - 110);
+      y.font = '700 96px Caveat'; y.fillStyle = '#eef1ea'; y.fillText(L(a), 230, ytxt); y.fillText(L(b), 850, ytxt);
+      y.fillStyle = '#f4e285'; y.font = '700 140px Caveat'; y.fillText(L(t), 540, ytxt);
+      y.font = '700 44px Caveat'; y.fillStyle = 'rgba(238,241,234,.8)';
+      y.fillText(P(a), 230, ytxt + 55); y.fillText(P(t), 540, ytxt + 55); y.fillText(P(b), 850, ytxt + 55);
+    };
+    fila(790, 'REMATES · LÍNEA 70%+', lineaSegura(pr.local.tiros, DISP_T), lineaSegura(pr.total.tiros, DISP_T), lineaSegura(pr.visita.tiros, DISP_T));
+    fila(1070, 'A PUERTA · LÍNEA 70%+', lineaSegura(pr.local.puerta, DISP_P), lineaSegura(pr.total.puerta, DISP_P), lineaSegura(pr.visita.puerta, DISP_P));
+    pie(y, alto); return c2;
+  };
+  let lista = dibujar(true);
+  try { lista.toDataURL(); } catch(e){ lista = dibujar(false); } // si los logos bloquean la imagen, se hace sin logos
+  descargar(lista, `dica-remates-${p.local.abrev}-${p.visita.abrev}.png`);
+}
+
+/* ---------- 8. ADMIN DE USUARIOS ---------- */
+function vistaAdmin(){
+  if (DEMO) return '<div class="bloque"><h3>Usuarios</h3><p class="estado">En modo demo no hay usuarios. Pega la configuración de Firebase en el archivo para activar esta sección.</p></div>';
+  const h = hoyKey();
+  return `<div class="bloque"><h3>Agregar usuario</h3><div class="form">
+      <input id="u-email" type="email" placeholder="Gmail del usuario">
+      <input id="u-nombre" placeholder="Nombre">
+      <input id="u-vence" type="date" value="${sumarDias(h,30)}">
+      <label><input id="u-equipo" type="checkbox" style="width:auto"> Es de mi equipo (sin vencimiento)</label>
+      <button class="btn" onclick="agregarUsuario()">Guardar</button></div></div>
+    <div class="bloque"><h3>Usuarios (${S.usuarios.length})</h3>
+      ${S.usuarios.map(u => { const v = vencido(u);
+        return `<div class="usr"><div class="n">${esc(u.nombre || u.id)}
+          ${u.equipo ? '<span class="pill eq">Equipo</span>' : u.suspendido ? '<span class="pill no">Suspendido</span>' : v ? '<span class="pill no">Vencido</span>' : '<span class="pill ok">Activo</span>'}</div>
+          <div class="d">${esc(u.id)} · ${u.equipo ? 'sin vencimiento' : 'vence ' + esc(u.vence || '–')} · ${(u.dispositivos || []).length}/${MAX_DISP} dispositivos</div>
+          <div class="fila-btns" style="margin:0">
+            ${u.equipo ? '' : `<button class="btn chico" onclick="renovar('${esc(u.id)}',30)">+30 días</button>`}
+            <button class="btn chico sec" onclick="suspender('${esc(u.id)}',${!u.suspendido})">${u.suspendido ? 'Reactivar' : 'Suspender'}</button>
+            <button class="btn chico sec" onclick="reiniciarDisp('${esc(u.id)}')">Reiniciar dispositivos</button>
+          </div></div>`; }).join('') || '<div class="estado">Aún no hay usuarios.</div>'}
+    </div>
+    <div class="bloque"><h3>Configuración</h3><div class="form">
+      <label>Días visibles para usuarios (1 = solo hoy, 2 = hoy y mañana)</label>
+      <select id="c-dias">${[1,2,3,7].map(n => `<option ${S.config.diasVisibles==n?'selected':''}>${n}</option>`).join('')}</select>
+      <label>WhatsApp para renovaciones</label><input id="c-wa" value="${esc(S.config.whatsapp)}">
+      <button class="btn" onclick="guardarConfig()">Guardar configuración</button></div></div>`;
+}
+let db, auth;
+async function agregarUsuario(){
+  const email = $('#u-email').value.trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return alert('Escribe un correo válido');
+  const equipo = $('#u-equipo').checked;
+  await db.collection('usuarios').doc(email).set({nombre: $('#u-nombre').value.trim(), vence: equipo ? null : $('#u-vence').value,
+    equipo, suspendido:false, dispositivos:[], creado: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+  $('#u-email').value = ''; $('#u-nombre').value = '';
+}
+async function renovar(email, dias){
+  const u = S.usuarios.find(x => x.id === email); const h = hoyKey();
+  const base = u && u.vence && u.vence > h ? u.vence : h;
+  await db.collection('usuarios').doc(email).update({vence: sumarDias(base, dias), suspendido:false});
+}
+async function suspender(email, s){ await db.collection('usuarios').doc(email).update({suspendido:s}); }
+async function reiniciarDisp(email){ if (confirm('¿Borrar los dispositivos registrados de ' + email + '?')) await db.collection('usuarios').doc(email).update({dispositivos:[]}); }
+async function guardarConfig(){
+  S.config.diasVisibles = parseInt($('#c-dias').value, 10); S.config.whatsapp = $('#c-wa').value.replace(/\D/g,'');
+  await db.collection('config').doc('app').set(S.config, {merge:true}); alert('Configuración guardada');
+}
+
+/* ---------- 9. NAVEGACIÓN ---------- */
+function ir(v){ S.vista = v; render(); window.scrollTo(0,0); if (v === 'partidos') cargarVista(); }
+function elegirLiga(l){ S.liga = l; cargarVista(); }
+function elegirDia(d){ S.dia = d; if (S.vista === 'picks') render(); else cargarVista(); }
+function recargar(){ Object.keys(S.cargadas).forEach(k => { delete S.cargadas[k]; try { localStorage.removeItem('dr_sb_' + k); } catch(e){} }); cargarVista(); }
+async function abrir(id){
+  const p = S.partidos.get(id); S.detalle = id; S.vista = 'detalle';
+  S.cargando = true; render(); window.scrollTo(0,0);
+  try { await asegurarStats([p.local.id, p.visita.id]); } finally { S.cargando = false; render(); }
+}
+let turno = 0;
+async function cargarVista(){
+  const mio = ++turno; S.error = null; S.cargando = true; S.progreso = ''; render();
+  try {
+    const ligas = S.liga === 'todas' ? LIGAS.map(l => l.id) : [S.liga];
+    await Promise.all(ligas.map(l => prepararLiga(l)));
+    if (mio !== turno) return;
+    const ps = partidosDelDia(S.liga, S.dia).filter(visible);
+    const ids = new Set(); ps.forEach(p => { ids.add(p.local.id); ids.add(p.visita.id); });
+    await asegurarStats([...ids]);
+  } catch(e){ S.error = e.message; }
+  if (mio === turno){ S.cargando = false; render(); }
+}
+
+/* ---------- 10. ACCESO, DISPOSITIVOS Y PROTECCIÓN ---------- */
+function pantalla(titulo, texto, botones){
+  $('#app').innerHTML = `<div class="pantalla"><div class="marca"><span class="balon"></span>DICA <b>REMATES</b></div>
+    ${titulo ? `<h2 style="font-weight:700;font-size:28px;letter-spacing:1px">${esc(titulo)}</h2>` : ''}
+    <p>${texto}</p>${botones || ''}<div class="firma">By: Ricardo Dionicio</div></div>`;
+}
+function pantallaRenovar(titulo, texto){
+  pantalla(titulo, texto, `<a class="btn" style="text-decoration:none" href="${waLink()}" target="_blank" rel="noopener">Renovar por WhatsApp</a>
+    <button class="btn sec" onclick="salir()">Salir</button>`);
+}
+function marcaAgua(email){
+  const t = esc(email);
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='320' height='200'><text x='10' y='110' transform='rotate(-25 160 100)' font-family='Arial' font-size='16' fill='white'>${t}</text></svg>`;
+  $('#marca-agua').style.background = `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
+}
+function proteger(email){
+  document.body.classList.add('protegido'); marcaAgua(email);
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keyup', e => { if (e.key === 'PrintScreen'){ try { navigator.clipboard.writeText(''); } catch(_){} } });
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['p','s','c'].includes(e.key.toLowerCase())) e.preventDefault(); });
+}
+function entrar(){
+  S.dia = hoyKey(); render(); cargarVista();
+  setInterval(() => { if (!S.esAdmin && (vencido(S.perfil) || (S.perfil && S.perfil.suspendido))) pantallaRenovar('Tu acceso venció', 'Tu suscripción a DICA REMATES terminó. Renueva para seguir viendo las proyecciones.'); }, 60e3);
+}
+async function iniciarSesion(){
+  const prov = new firebase.auth.GoogleAuthProvider();
+  try { await auth.signInWithPopup(prov); }
+  catch(e){ if (/popup/i.test(e.code || '')) await auth.signInWithRedirect(prov); else alert('No se pudo entrar: ' + e.message); }
+}
+function salir(){ if (auth) auth.signOut(); }
+
+async function arrancar(){
+  if (DEMO){
+    S.usuario = {email:ADMIN}; S.esAdmin = true; S.exento = true; S.perfil = {nombre:'Ricardo (demo)', equipo:true};
+    return entrar();
+  }
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth(); db = firebase.firestore();
+  auth.onAuthStateChanged(async user => {
+    if (!user){
+      S.usuario = null;
+      return pantalla('', 'Proyecciones de remates totales y a puerta para Liga MX, Premier League, LaLiga, Serie A, MLS, Champions, Europa y Conference League.',
+        '<button class="btn" onclick="iniciarSesion()">Entrar con Google</button>');
+    }
+    const email = (user.email || '').toLowerCase();
+    S.usuario = user; S.esAdmin = email === ADMIN; S.exento = EXENTOS.includes(email);
+    pantalla('', 'Verificando tu acceso…');
+    try {
+      const cfg = await db.collection('config').doc('app').get();
+      if (cfg.exists) S.config = Object.assign(S.config, cfg.data());
+      if (S.esAdmin){
+        S.perfil = {nombre:'Ricardo', equipo:true};
+        db.collection('usuarios').onSnapshot(q => { S.usuarios = q.docs.map(d => ({id:d.id, ...d.data()})); if (S.vista === 'admin') render(); });
+        return entrar();
+      }
+      const ref = db.collection('usuarios').doc(email), doc = await ref.get();
+      if (!doc.exists && !S.exento) return pantallaRenovar('Sin acceso', `La cuenta ${esc(email)} no tiene suscripción a DICA REMATES. Escríbeme para activarla.`);
+      S.perfil = doc.exists ? doc.data() : {nombre:email, equipo:true};
+      if (S.exento && !doc.exists) S.perfil.equipo = true;
+      if (S.perfil.suspendido) return pantallaRenovar('Cuenta suspendida', 'Tu acceso está suspendido. Escríbeme para reactivarlo.');
+      if (vencido(S.perfil)) return pantallaRenovar('Tu acceso venció', `Tu suscripción terminó el ${esc(S.perfil.vence)}. Renueva para seguir viendo las proyecciones.`);
+      if (!S.exento){
+        const dev = deviceId(), lista = S.perfil.dispositivos || [];
+        if (!lista.includes(dev)){
+          if (lista.length >= MAX_DISP) return pantallaRenovar('Límite de dispositivos', `Esta cuenta ya está activa en ${MAX_DISP} dispositivos. Si cambiaste de celular, escríbeme para liberarla.`);
+          await ref.update({dispositivos: firebase.firestore.FieldValue.arrayUnion(dev)});
+        }
+        proteger(email);
+      }
+      entrar();
+    } catch(e){ pantalla('Error', 'No se pudo verificar tu acceso: ' + esc(e.message), '<button class="btn sec" onclick="location.reload()">Reintentar</button>'); }
+  });
+}
+arrancar();
+</script>
+</body>
+</html>
