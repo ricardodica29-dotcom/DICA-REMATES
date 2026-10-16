@@ -1,0 +1,1346 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1a070c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DICA REMATES">
+<title>DICA REMATES</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --vino:#4a1220;--vino2:#2a0c13;--oro:#d4af6a;--oro2:#f3dfae;
+  --cal:#fbf8f3;--cal2:#cdbcaf;--linea:rgba(212,175,106,.2);
+  --panel:rgba(14,5,9,.62);--panelV:rgba(74,18,32,.74);--rojo:#f2a7a7;--verde:#7ee0a1;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{color:var(--cal);font-family:'Archivo',system-ui,sans-serif;font-size:15px;background:#060205;-webkit-tap-highlight-color:transparent}
+body.protegido{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select{font:inherit}
+.vidrio{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.oro{color:var(--oro)}
+
+/* Fondo: estadio nocturno */
+#fondo{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:radial-gradient(130% 55% at 50% 72%,#4a1220 0%,#1c070d 48%,#060205 100%)}
+#fondo svg{position:absolute;inset:0;width:100%;height:100%}
+#fondo .velo{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,2,5,.25) 0%,rgba(6,2,5,.5) 50%,rgba(6,2,5,.82) 100%)}
+.hazA,.hazB{transform-box:view-box}
+.hazA{transform-origin:30px 222px;animation:hazA 6s ease-in-out infinite alternate}
+.hazB{transform-origin:360px 222px;animation:hazB 7s ease-in-out infinite alternate}
+.gradas{animation:gradas 3s linear infinite}
+.foco{animation:foco 2.4s ease-in-out infinite}
+#app{position:relative;z-index:1}
+
+/* Encabezado y navegación */
+.wrap{max-width:760px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:20;background:rgba(20,7,11,.72);border-bottom:1px solid var(--linea);padding-top:env(safe-area-inset-top)}
+.top{max-width:760px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.marca{font-family:'Jost',sans-serif;font-weight:500;font-size:20px;letter-spacing:1px;line-height:1;display:flex;align-items:center;gap:10px}
+.marca b{color:var(--oro);font-weight:500}
+.usuario{font-size:12px;color:var(--cal2);text-align:right;line-height:1.35;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.usuario button{background:none;border:1px solid rgba(212,175,106,.4);border-radius:30px;padding:4px 12px;font-size:12px;color:var(--cal)}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(20,7,11,.88);border-top:1px solid rgba(212,175,106,.4);padding-bottom:env(safe-area-inset-bottom)}
+nav .in{max-width:760px;margin:0 auto;display:flex}
+nav button{flex:1;background:none;border:none;border-top:2px solid transparent;padding:13px 4px 12px;font-weight:500;font-size:14px;color:var(--cal2);min-height:48px}
+nav button.on{color:var(--oro);border-top-color:var(--oro)}
+
+/* Ligas y días */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid rgba(212,175,106,.3);background:rgba(255,255,255,.06);color:var(--cal);border-radius:30px;padding:8px 15px;font-weight:500;font-size:14px;white-space:nowrap;min-height:38px}
+.chip.on{background:var(--oro);color:var(--vino2);border-color:var(--oro)}
+.dias{gap:18px;border-bottom:1px solid var(--linea);padding-top:6px}
+.dias .chip{background:none;border:none;border-bottom:2px solid transparent;border-radius:0;padding:6px 2px 9px;color:var(--cal2);text-align:center;min-width:auto}
+.dias .chip.on{background:none;color:var(--cal);border-bottom-color:var(--oro)}
+.chip small{display:block;font-size:11px;font-weight:400;opacity:.8}
+
+/* Línea más segura del día */
+.pickdia{margin:14px 0 4px;background:var(--panelV);border:1px solid rgba(212,175,106,.4);padding:16px;display:flex;flex-direction:column;gap:6px}
+.pickdia .grande{font-family:'Jost',sans-serif;font-weight:500;font-size:44px;line-height:1}
+.pickdia .fila-btns{align-items:center;margin:8px 0 0}
+.pct{border:1.5px solid var(--oro);border-radius:30px;padding:8px 14px;font-family:'Jost',sans-serif;font-weight:500;font-size:17px;color:var(--oro)}
+.brillo{background:linear-gradient(100deg,#d4af6a 40%,#f3dfae 50%,#d4af6a 60%);background-size:420px 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:brillo 2.8s linear infinite}
+
+/* Lista de partidos */
+.lista{margin:12px 0;background:var(--panel);border:1px solid var(--linea)}
+.fila{width:100%;text-align:left;background:transparent;border:none;border-bottom:1px solid rgba(212,175,106,.16);padding:13px 14px;display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;color:var(--cal);transition:background-color .15s}
+.fila:last-child{border-bottom:none}
+.fila:active{background-color:rgba(212,175,106,.12)}
+.fcol{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fhora{font-size:12px;color:var(--cal2);display:flex;align-items:center;gap:6px}
+.fhora.envivo{color:#ff6b81}
+.feq{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fnum{display:flex;flex-direction:column;align-items:flex-end;min-width:54px}
+.fnum b{font-family:'Jost',sans-serif;font-weight:500;font-size:24px;line-height:1.1}
+.fnum small{font-size:12px}
+i.vivo{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff6b81;animation:vivo 1.1s infinite}
+
+/* Escudos */
+.logo{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+.logo.g{width:64px;height:64px}
+.logo.m{width:22px;height:22px;flex:0 0 auto}
+.placa{width:44px;height:44px;border-radius:50%;display:inline-grid;place-items:center;font-weight:600;font-size:12px;border:2px solid var(--oro)}
+.placa.g{width:64px;height:64px;font-size:14px}
+.placa.m{width:14px;height:14px;border-width:1.5px;flex:0 0 auto}
+
+/* Detalle */
+.volver{background:none;border:none;color:var(--oro);padding:10px 0;font-weight:500;min-height:44px;font-size:15px}
+.herod{background:var(--panelV);border:1px solid rgba(212,175,106,.4);padding:14px 14px 16px}
+.eqs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-top:10px;text-align:center}
+.eq{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:'Jost',sans-serif;font-weight:500;font-size:16px;line-height:1.15}
+.vs{font-family:'Jost',sans-serif;font-size:22px;color:var(--oro)}
+.vs.mar{font-size:34px;color:var(--cal)}
+.dos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:rgba(212,175,106,.35);margin-top:16px}
+.dos>div{background:rgba(42,12,19,.92);padding:8px 10px}
+.enorme{font-family:'Jost',sans-serif;font-weight:500;font-size:40px;line-height:1.05}
+.dos .sub{font-size:14px}
+.dos .sub b{font-family:'Jost',sans-serif;font-weight:500;font-size:20px}
+.seg2{display:flex;background:rgba(255,255,255,.07);border-radius:30px;padding:4px;margin-bottom:6px}
+.seg2 button{flex:1;border:none;border-radius:30px;padding:9px 0;font-weight:500;font-size:14px;background:transparent;color:var(--cal);min-height:40px}
+.seg2 button.on{background:var(--oro);color:var(--vino2)}
+.quien{margin:4px 0 10px}
+.quien button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:9px 8px;font-size:13px}
+.pb{display:grid;grid-template-columns:78px 1fr 44px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(212,175,106,.16);font-size:15px}
+.pb b{text-align:right}
+.pista{height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.pista i{display:block;height:100%;border-radius:3px;transform-origin:left center}
+.casa{display:flex;align-items:center;gap:10px}
+.casa label{flex:1;font-size:14px;color:var(--cal2)}
+.casa input{width:100px;border:1px solid var(--oro);border-radius:30px;padding:10px 12px;font-weight:600;font-size:16px;text-align:center;background:rgba(255,255,255,.06);color:var(--cal)}
+.split{display:flex;height:34px;border-radius:30px;overflow:hidden;font-size:13px;font-weight:600;margin-top:10px}
+.split span:first-child{display:flex;align-items:center;padding-left:12px;white-space:nowrap;background:var(--oro);color:var(--vino2);transition:width .45s cubic-bezier(.2,.7,.2,1)}
+.split span:last-child{flex:1;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;white-space:nowrap;background:rgba(255,255,255,.1)}
+.valor{font-size:14px;font-weight:600;margin-top:8px}
+.graf{margin:10px 0 14px}
+.gtit{display:flex;align-items:center;gap:8px;font-weight:500;margin-bottom:6px}
+.barras{position:relative;display:flex;align-items:flex-end;gap:7px}
+.barras .guia{position:absolute;left:0;right:0;border-top:1.5px dashed var(--oro)}
+.bcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%}
+.bcol small{font-size:11px;color:var(--cal2)}
+.bcol i{display:block;width:100%}
+.pila{display:flex;flex-direction:column;width:100%;border-radius:4px 4px 0 0;overflow:hidden;transform-origin:bottom center}
+.barras .guia.g2{border-top-color:rgba(251,248,243,.75)}
+.resumen{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 10px;text-align:center;font-size:12px;color:var(--cal2)}
+.resumen span{background:rgba(255,255,255,.05);border:1px solid rgba(212,175,106,.18);padding:6px 4px}
+.resumen b{display:block;font-family:'Jost',sans-serif;font-weight:500;font-size:22px;color:var(--cal)}
+.resumen b.oro{color:var(--oro)}
+.leyenda{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--cal2);margin:8px 0 4px}
+.leyenda span{display:flex;align-items:center;gap:5px}
+.leyenda i{width:12px;height:12px;display:inline-block;border-radius:2px}
+.leyenda i.ln{height:0;width:16px;border-top:1.5px dashed var(--oro);border-radius:0}
+.leyenda i.ln.l2{border-top-color:rgba(251,248,243,.75)}
+.pxp{margin-top:8px;font-size:13px}
+.pxp summary{cursor:pointer;color:var(--oro);font-weight:500;min-height:36px;display:flex;align-items:center}
+.pxpf{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:6px;padding:7px 0;border-bottom:1px solid rgba(212,175,106,.12);color:var(--cal2)}
+.pxpf em{font-style:normal;font-size:11px;border:1px solid var(--linea);padding:0 4px;margin-left:4px}
+.pxpf b{color:var(--cal)}
+
+/* Bloques generales */
+.estado{padding:16px;text-align:center;color:var(--cal2);font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+.bloque{background:var(--panel);border:1px solid var(--linea);padding:14px;margin:12px 0;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.bloque h3{font-family:'Jost',sans-serif;font-weight:500;font-size:19px;margin:16px 0 8px}
+.bloque h3:first-child,.bloque .seg2+h3{margin-top:4px}
+.num{font-family:'Jost',sans-serif;font-weight:500;font-size:30px;line-height:1;color:var(--oro)}
+.num small{font-size:16px;color:var(--cal)}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cal2)}
+.lbl.oro{color:var(--oro)}
+.nota{font-size:13px;color:var(--cal2);line-height:1.35}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center;margin-bottom:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;text-align:center}
+.grid4 .num{font-size:28px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--cal2);font-weight:500;text-align:center;padding:6px 4px;border-bottom:1px solid var(--linea)}
+td{text-align:center;padding:8px 4px;border-bottom:1px solid rgba(212,175,106,.1);font-variant-numeric:tabular-nums}
+td.alta{color:var(--vino2);background:var(--oro);font-weight:600;border-radius:6px}
+td.seg{font-family:'Jost',sans-serif;font-weight:500;font-size:19px;color:var(--oro)}
+td.seg small{font-family:'Archivo',sans-serif;font-size:12px;color:var(--cal)}
+.aviso{font-size:14px;color:#ffd9a0;background:rgba(255,217,160,.08);border:1px solid rgba(255,217,160,.4);padding:9px 11px;margin:10px 0}
+.btn{background:var(--oro);color:var(--vino2);border:none;border-radius:30px;padding:12px 18px;font-weight:600;font-size:15px;min-height:44px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.sec{background:transparent;color:var(--cal);border:1px solid rgba(212,175,106,.45)}
+.btn.chico{padding:6px 12px;font-size:13px;min-height:36px}
+.btn:disabled{opacity:.75}
+.fila-btns{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.firma{font-size:12px;color:var(--cal2);text-align:center;padding:18px 0 6px}
+.form{display:grid;gap:8px}
+.form input,.form select{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(212,175,106,.35);color:var(--cal);border-radius:30px;padding:11px 16px}
+.form label{font-size:13px;color:var(--cal2);display:flex;align-items:center;gap:8px}
+.usr{border-bottom:1px solid var(--linea);padding:10px 0}
+.usr .n{font-weight:600;font-size:16px}
+.usr .d{font-size:12px;color:var(--cal2);margin:2px 0 6px}
+.pill{display:inline-block;font-size:11px;font-weight:600;border-radius:30px;padding:2px 8px;margin-left:6px}
+.pill.ok{background:var(--oro);color:var(--vino2)}
+.pill.no{background:var(--rojo);color:var(--vino2)}
+.pill.eq{background:#a7d3f2;color:var(--vino2)}
+.pick{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:11px 0;border-bottom:1px solid rgba(212,175,106,.16)}
+.pick .q{font-weight:600;font-size:15px}
+.pick .p{font-family:'Jost',sans-serif;font-weight:500;font-size:24px;color:var(--oro);grid-row:span 2;align-self:center}
+.pick .s{font-size:12px;color:var(--cal2)}
+.res{grid-row:span 2;align-self:center;min-width:34px;height:34px;border-radius:30px;display:grid;place-items:center;font-weight:600;font-size:16px;padding:0 8px}
+.res.g{background:var(--oro);color:var(--vino2)}
+.res.p{background:rgba(242,167,167,.18);color:var(--rojo)}
+.res.nd,.res.pend{background:rgba(255,255,255,.08);color:var(--cal2);font-size:12px}
+#marca-agua{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.07}
+.demo{background:var(--oro);color:var(--vino2);text-align:center;font-size:13px;font-weight:600;padding:4px}
+
+/* Pantallas de entrada */
+.pantalla{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 22px 24px;gap:12px;max-width:440px;margin:0 auto}
+.pantalla h2{font-family:'Jost',sans-serif;font-weight:500;font-size:26px}
+.pantalla p{color:var(--cal2);line-height:1.5}
+.marca.grande{font-size:36px;letter-spacing:2px}
+.lema{font-size:12px;letter-spacing:3px;color:var(--oro)}
+.ticker{display:flex;flex-direction:column;align-items:center;min-height:52px;margin-top:14px}
+.ticker b{font-family:'Jost',sans-serif;font-weight:500;font-size:26px}
+.ticker span{font-size:13px;color:var(--cal2)}
+.puntos{display:flex;gap:6px;justify-content:center}
+.puntos i{height:6px;width:6px;border-radius:3px;background:rgba(212,175,106,.35);transition:width .3s}
+.puntos i.on{width:22px;background:var(--oro)}
+.login{width:100%;display:flex;flex-direction:column;gap:9px;text-align:left;background:rgba(20,7,11,.62);border:1px solid rgba(212,175,106,.35);padding:18px 16px;margin-top:16px}
+.login label{font-size:13px;color:var(--cal2)}
+.login input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(212,175,106,.35);border-radius:30px;padding:12px 16px;color:var(--cal);font-size:16px}
+.login input:focus,.form input:focus,.casa input:focus{outline:none;border-color:var(--oro);box-shadow:0 0 0 3px rgba(212,175,106,.28)}
+.pass{position:relative}
+.pass input{padding-right:54px}
+.ojo{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:none;background:none;color:var(--oro);display:grid;place-items:center}
+.error{min-height:18px;font-size:13px;color:var(--rojo)}
+.enlace{background:none;border:none;color:var(--cal2);font-weight:500;font-size:14px;min-height:40px}
+.aviso-login{color:#ffd9a0 !important;font-size:14px}
+.cargando{display:flex;flex-direction:column;align-items:center;gap:14px;padding:30px 0;color:var(--cal2)}
+.bienv{display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px 0}
+.bienv .bt{font-family:'Jost',sans-serif;font-weight:500;font-size:26px}
+
+/* Movimiento */
+@keyframes hazA{from{transform:rotate(-40deg)}to{transform:rotate(-16deg)}}
+@keyframes hazB{from{transform:rotate(40deg)}to{transform:rotate(16deg)}}
+@keyframes gradas{to{stroke-dashoffset:-34}}
+@keyframes foco{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes sube{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes entra{from{opacity:0;transform:translateX(44px)}to{opacity:1;transform:none}}
+@keyframes crece{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes alza{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes pulso{0%{box-shadow:0 0 0 0 rgba(212,175,106,.6)}70%{box-shadow:0 0 0 12px rgba(212,175,106,0)}100%{box-shadow:0 0 0 0 rgba(212,175,106,0)}}
+@keyframes vivo{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes brillo{0%{background-position:-160px 0}100%{background-position:260px 0}}
+@keyframes traza{from{stroke-dashoffset:160}to{stroke-dashoffset:0}}
+@keyframes aparece{from{opacity:0}to{opacity:1}}
+@keyframes agita{0%,100%{transform:none}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes gira{to{transform:rotate(360deg)}}
+@keyframes check{from{stroke-dashoffset:40}to{stroke-dashoffset:0}}
+@keyframes anillo{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.sube{animation:sube .45s cubic-bezier(.2,.7,.2,1) both}
+.entra{animation:entra .42s cubic-bezier(.2,.7,.2,1) both}
+.crece{animation:crece .7s cubic-bezier(.2,.7,.2,1) both}
+.alza{animation:alza .65s cubic-bezier(.2,.7,.2,1) both}
+.pulso{animation:pulso 2.2s infinite}
+.traza{stroke-dasharray:160;animation:traza 1.4s cubic-bezier(.6,0,.2,1) both}
+.letraD{animation:aparece .5s 1.1s both}
+.e1{animation:sube .6s .3s cubic-bezier(.2,.7,.2,1) both}
+.e2{animation:sube .6s .5s cubic-bezier(.2,.7,.2,1) both}
+.e3{animation:sube .6s .7s cubic-bezier(.2,.7,.2,1) both}
+.e4{animation:sube .6s .9s cubic-bezier(.2,.7,.2,1) both}
+.agita{animation:agita .4s ease both}
+.gira{animation:gira .8s linear infinite}
+.check{stroke-dasharray:40;animation:check .5s .25s ease-out both}
+.anillo{animation:anillo .45s cubic-bezier(.2,.7,.2,1.3) both}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}.brillo{color:var(--oro)}}
+</style>
+</head>
+<body>
+<div id="fondo" aria-hidden="true">
+  <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMax slice">
+    <defs><linearGradient id="gHaz" gradientUnits="userSpaceOnUse" x1="0" y1="222" x2="0" y2="900"><stop offset="0" stop-color="#f3dfae" stop-opacity=".36"/><stop offset=".8" stop-color="#f3dfae" stop-opacity="0"/></linearGradient></defs>
+    <g class="hazA"><polygon points="27,222 33,222 150,940 -90,940" fill="url(#gHaz)"/></g>
+    <g class="hazB"><polygon points="357,222 363,222 480,940 240,940" fill="url(#gHaz)"/></g>
+    <ellipse cx="195" cy="600" rx="300" ry="150" fill="none" stroke="rgba(212,175,106,0.2)" stroke-width="1.5"/>
+    <ellipse class="gradas" cx="195" cy="600" rx="262" ry="128" fill="none" stroke="rgba(243,223,174,0.6)" stroke-width="3" stroke-dasharray="1.5 7"/>
+    <ellipse class="gradas" cx="195" cy="600" rx="228" ry="108" fill="none" stroke="rgba(243,223,174,0.42)" stroke-width="3" stroke-dasharray="1.5 6"/>
+    <ellipse cx="195" cy="600" rx="196" ry="90" fill="rgba(212,175,106,0.05)" stroke="rgba(212,175,106,0.5)" stroke-width="1.5"/>
+    <path d="M110 560 L280 560 L340 660 L50 660 Z" fill="rgba(212,175,106,0.08)" stroke="rgba(212,175,106,0.65)" stroke-width="1.2"/>
+    <line x1="195" y1="560" x2="195" y2="660" stroke="rgba(212,175,106,0.6)" stroke-width="1"/>
+    <ellipse cx="195" cy="608" rx="34" ry="14" fill="none" stroke="rgba(212,175,106,0.6)" stroke-width="1"/>
+    <line x1="30" y1="230" x2="30" y2="560" stroke="rgba(212,175,106,0.4)" stroke-width="2"/>
+    <line x1="360" y1="230" x2="360" y2="560" stroke="rgba(212,175,106,0.4)" stroke-width="2"/>
+    <rect class="foco" x="14" y="216" width="32" height="12" rx="2" fill="#f3dfae"/>
+    <rect class="foco" x="344" y="216" width="32" height="12" rx="2" fill="#f3dfae"/>
+  </svg>
+  <div class="velo"></div>
+</div>
+<div id="app"></div>
+<div id="marca-agua"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* =========================================================
+   DICA REMATES — By: Ricardo Dionicio
+   Proyecciones de remates (totales y a puerta) con datos de ESPN
+   ========================================================= */
+
+/* ---------- 1. CONFIGURACIÓN (pega aquí la de tu proyecto Firebase) ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyDyQsdHuMh8oPRSH7uacNcwogRXmHh59Mc",
+  authDomain: "dica-remates.firebaseapp.com",
+  projectId: "dica-remates",
+  storageBucket: "dica-remates.firebasestorage.app",
+  messagingSenderId: "447436532434",
+  appId: "1:447436532434:web:7609aa1e42b274b5855b0b",
+  measurementId: "G-439NP97SQ9"
+};
+const ADMIN = 'ricardodica29@gmail.com';
+const EXENTOS = ['ricardodica29@gmail.com','kikedc907@gmail.com','maudg.1616@gmail.com','adri.santillan36@gmail.com'];
+const WHATSAPP_DEF = '7298812937';
+const MAX_DISP = 2;
+const DEMO = false;
+const TZ = 'America/Mexico_City';
+const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/soccer/';
+
+const LIGAS = [
+  {id:'mex.1', n:'Liga MX', c:'MX'},
+  {id:'eng.1', n:'Premier League', c:'ING'},
+  {id:'esp.1', n:'LaLiga', c:'ESP'},
+  {id:'ita.1', n:'Serie A', c:'ITA'},
+  {id:'usa.1', n:'MLS', c:'MLS'},
+  {id:'uefa.champions', n:'Champions League', c:'UCL'},
+  {id:'uefa.europa', n:'Europa League', c:'UEL'},
+  {id:'uefa.europa.conf', n:'Conference League', c:'UECL'}
+];
+// Ligas de apoyo: solo se cargan para tener historial de equipos que juegan torneos UEFA
+const APOYO = ['ger.1','fra.1','por.1','ned.1'];
+const nombreLiga = id => (LIGAS.find(l => l.id === id) || {n:id}).n;
+
+/* ---------- 2. MODELO DE PROYECCIÓN ---------- */
+// ==MODELO==
+// Promedio base de remates por equipo por partido [totales, a puerta]; se reemplaza poco a poco con los datos reales
+const BASE = {
+  'mex.1':[12.3,4.2], 'eng.1':[12.6,4.3], 'esp.1':[11.9,4.0], 'ita.1':[12.8,4.2], 'usa.1':[12.7,4.4],
+  'uefa.champions':[12.6,4.5], 'uefa.europa':[12.4,4.3], 'uefa.europa.conf':[12.5,4.3], def:[12.4,4.3]
+};
+const N_ULTIMOS = 10;   // partidos recientes que se usan por equipo
+const DECAY = 0.88;     // peso de cada partido hacia atrás (el más reciente pesa más)
+const K_SHRINK = 2.5;   // cuánto se jala hacia el promedio de la liga cuando hay pocos datos
+const LOCAL = 1.06, VISITA = 0.94; // ventaja de localía
+const DISP_T = 1.45, DISP_P = 1.25; // dispersión (varianza/media) para remates totales y a puerta
+
+function promedioLiga(partidos, liga){
+  let t=0,n=0,o=0,no=0;
+  for (const p of partidos){
+    if (p.liga !== liga || !p.stats) continue;
+    t += p.stats.local.tiros + p.stats.visita.tiros; n += 2;
+    if (p.stats.local.puerta != null && p.stats.visita.puerta != null){ o += p.stats.local.puerta + p.stats.visita.puerta; no += 2; }
+  }
+  const b = BASE[liga] || BASE.def, kb = 20;
+  return [(t + b[0]*kb)/(n + kb), (o + b[1]*kb)/(no + kb)];
+}
+
+// lista: partidos terminados del equipo, del más reciente al más antiguo
+function perfilEquipo(lista, id){
+  let W=0, at=0, df=0, Wp=0, ap=0, dp=0; const ult=[];
+  for (const p of lista){
+    if (!p.stats) continue;
+    const loc = p.local.id === id;
+    const yo = loc ? p.stats.local : p.stats.visita, el = loc ? p.stats.visita : p.stats.local;
+    const w = Math.pow(DECAY, ult.length);
+    W += w; at += w*yo.tiros; df += w*el.tiros;
+    if (yo.puerta != null && el.puerta != null){ Wp += w; ap += w*yo.puerta; dp += w*el.puerta; }
+    ult.push({fecha:p.fecha, liga:p.liga, rival: loc ? p.visita : p.local, local:loc,
+      tiros:yo.tiros, puerta:yo.puerta, contra:el.tiros, contraP:el.puerta});
+  }
+  return {W, Wp, at: W?at/W:null, df: W?df/W:null, ap: Wp?ap/Wp:null, dp: Wp?dp/Wp:null, ult, n:ult.length};
+}
+
+function encoger(v, w, L){ return v == null ? L : (v*w + L*K_SHRINK)/(w + K_SHRINK); }
+
+function proyectar(pl, pv, L){
+  const [Lt, Lp] = L;
+  const lt = encoger(pl.at,pl.W,Lt) * encoger(pv.df,pv.W,Lt) / Lt * LOCAL;
+  const vt = encoger(pv.at,pv.W,Lt) * encoger(pl.df,pl.W,Lt) / Lt * VISITA;
+  const lp = encoger(pl.ap,pl.Wp,Lp) * encoger(pv.dp,pv.Wp,Lp) / Lp * LOCAL;
+  const vp = encoger(pv.ap,pv.Wp,Lp) * encoger(pl.dp,pl.Wp,Lp) / Lp * VISITA;
+  return {local:{tiros:lt,puerta:lp}, visita:{tiros:vt,puerta:vp}, total:{tiros:lt+vt,puerta:lp+vp}, muestra:Math.min(pl.n,pv.n)};
+}
+
+// Probabilidad de que salgan MÁS remates que la línea (binomial negativa)
+function probMas(mu, disp, linea){
+  if (!(mu > 0)) return 0;
+  const v = mu*disp, r = mu*mu/(v - mu), p = r/(r + mu), k = Math.floor(linea);
+  let pk = Math.pow(p, r), cdf = pk;
+  for (let i = 0; i < k; i++){ pk = pk*(i + r)/(i + 1)*(1 - p); cdf += pk; }
+  return Math.max(0, Math.min(1, 1 - cdf));
+}
+
+function lineasPara(mu, paso, n){
+  const c = Math.floor(mu) + 0.5, out = [];
+  for (let i = -n; i <= n; i++){ const l = c + i*paso; if (l > 0) out.push(l); }
+  return out;
+}
+
+function mercados(pr, nl, nv){
+  return [
+    {clave:'tt', nombre:'Remates totales del partido', mu:pr.total.tiros, disp:DISP_T, lineas:lineasPara(pr.total.tiros,2,2)},
+    {clave:'pt', nombre:'Remates a puerta del partido', mu:pr.total.puerta, disp:DISP_P, lineas:lineasPara(pr.total.puerta,1,2)},
+    {clave:'tl', nombre:'Remates totales · '+nl, mu:pr.local.tiros, disp:DISP_T, lineas:lineasPara(pr.local.tiros,1,2)},
+    {clave:'tv', nombre:'Remates totales · '+nv, mu:pr.visita.tiros, disp:DISP_T, lineas:lineasPara(pr.visita.tiros,1,2)},
+    {clave:'pl', nombre:'Remates a puerta · '+nl, mu:pr.local.puerta, disp:DISP_P, lineas:lineasPara(pr.local.puerta,1,1)},
+    {clave:'pv', nombre:'Remates a puerta · '+nv, mu:pr.visita.puerta, disp:DISP_P, lineas:lineasPara(pr.visita.puerta,1,1)}
+  ].map(m => ({...m, filas: m.lineas.map(l => ({linea:l, mas:probMas(m.mu, m.disp, l)}))}));
+}
+
+// Línea segura: la línea más alta de "Más de" con al menos 70% de probabilidad
+function lineaSegura(mu, disp, minProb){
+  minProb = minProb || 0.70;
+  for (let l = Math.floor(mu) + 0.5; l > 0; l -= 1){
+    const pr = probMas(mu, disp, l);
+    if (pr >= minProb) return {linea:l, prob:pr};
+  }
+  return null;
+}
+// ==FIN MODELO==
+
+/* ---------- 3. UTILIDADES ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDia = d => new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+const hoyKey = () => fmtDia(new Date());
+function sumarDias(key, n){ const d = new Date(key + 'T12:00:00-06:00'); d.setUTCDate(d.getUTCDate() + n); return fmtDia(d); }
+const ymd = k => k.replace(/-/g,'');
+const horaMx = iso => new Intl.DateTimeFormat('es-MX',{timeZone:TZ,hour:'numeric',minute:'2-digit'}).format(new Date(iso));
+const fechaCorta = iso => new Intl.DateTimeFormat('es-MX',{timeZone:TZ,day:'numeric',month:'short'}).format(new Date(iso));
+function etiquetaDia(k){
+  const h = hoyKey();
+  if (k === h) return ['Hoy', fechaCorta(k + 'T12:00:00-06:00')];
+  if (k === sumarDias(h,1)) return ['Mañana', fechaCorta(k + 'T12:00:00-06:00')];
+  if (k === sumarDias(h,-1)) return ['Ayer', fechaCorta(k + 'T12:00:00-06:00')];
+  const d = new Date(k + 'T12:00:00-06:00');
+  const dia = new Intl.DateTimeFormat('es-MX',{timeZone:TZ,weekday:'short'}).format(d);
+  return [dia.charAt(0).toUpperCase() + dia.slice(1), fechaCorta(d)];
+}
+const f1 = x => (Math.round(x*10)/10).toFixed(1);
+const pct = x => Math.round(x*100) + '%';
+function lsGet(k){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e){ return null; } }
+function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+async function getJSON(url){ const r = await fetch(url, {cache:'no-store'}); if (!r.ok) throw new Error('HTTP ' + r.status + ' en ' + url.replace(ESPN, '')); return r.json(); }
+async function pool(items, n, fn, alAvanzar){
+  let i = 0, hechos = 0;
+  const trab = async () => { while (i < items.length){ const it = items[i++]; await fn(it); hechos++; if (alAvanzar) alAvanzar(hechos, items.length); } };
+  await Promise.all(Array.from({length: Math.min(n, items.length)}, trab));
+}
+function deviceId(){
+  let id = lsGet('dr_disp');
+  if (!id){ id = 'd' + Math.random().toString(36).slice(2) + Date.now().toString(36); lsSet('dr_disp', id); }
+  return id;
+}
+const waLink = (txt) => 'https://wa.me/52' + (S.config.whatsapp || WHATSAPP_DEF) + '?text=' + encodeURIComponent(txt || 'Hola Ricardo, quiero renovar DICA REMATES');
+function vencido(perfil){
+  if (!perfil || perfil.equipo || !perfil.vence) return false;
+  return Date.now() >= Date.parse(perfil.vence + 'T00:00:00-06:00'); // vence a las 12:00 am del día de vencimiento
+}
+
+/* ---------- 4. ESTADO ---------- */
+const S = {
+  usuario:null, perfil:null, esAdmin:false, exento:false,
+  config:{diasVisibles:2, whatsapp:WHATSAPP_DEF},
+  liga:'mex.1', dia:hoyKey(), vista:'partidos', detalle:null,
+  partidos:new Map(), cargadas:{}, cargando:false, progreso:'',
+  usuarios:[], picks:null, jornadas:{}, estadoPub:{}
+};
+
+/* ---------- 5. DATOS ESPN ---------- */
+function leerStats(arr){
+  if (!arr || !arr.length) return null;
+  const m = {};
+  arr.forEach(s => { m[s.name] = parseFloat(s.displayValue != null ? s.displayValue : s.value); });
+  const t = m.totalShots, o = (m.shotsOnTarget != null ? m.shotsOnTarget : m.shotsOnGoal);
+  if (!isFinite(t)) return null;
+  return {tiros:t, puerta: isFinite(o) ? o : null};
+}
+function parseEvento(e, liga){
+  const c = e.competitions && e.competitions[0]; if (!c || !c.competitors) return null;
+  const h = c.competitors.find(x => x.homeAway === 'home'), a = c.competitors.find(x => x.homeAway === 'away');
+  if (!h || !a || !h.team || !a.team) return null;
+  const eq = x => ({id:String(x.team.id), nombre:x.team.shortDisplayName || x.team.displayName, abrev:x.team.abbreviation || '',
+    logo:x.team.logo || '', color:x.team.color || '1b5e20', alt:x.team.alternateColor || 'ffffff', goles:x.score});
+  const st = (c.status && c.status.type) || {};
+  let estado = st.state || 'pre';
+  if (/POSTPONED|CANCELED|CANCELLED|ABANDONED|SUSPENDED/.test(st.name || '')) estado = 'canc';
+  else if (estado === 'post' && st.completed === false) estado = 'canc';
+  const p = {id:String(e.id), liga, fecha:e.date, estado, detalle:st.shortDetail || '', local:eq(h), visita:eq(a), stats:null};
+  const sh = leerStats(h.statistics), sa = leerStats(a.statistics);
+  if (estado === 'post' && sh && sa) p.stats = {local:sh, visita:sa};
+  return p;
+}
+function guardar(p){
+  if (!p.stats && p.estado === 'post'){ const c = lsGet('dr_st_' + p.id); if (c) p.stats = c; }
+  const prev = S.partidos.get(p.id);
+  if (prev && prev.stats && !p.stats) p.stats = prev.stats;
+  S.partidos.set(p.id, p);
+}
+async function cargarLiga(liga, forzar){
+  if (S.cargadas[liga] && !forzar) return;
+  const key = 'dr_sb3_' + liga, c = lsGet(key);
+  if (!forzar && c && Date.now() - c.t < 30*60e3){ c.p.forEach(guardar); S.cargadas[liga] = true; return; }
+  // ESPN no acepta rangos de fechas en fútbol: se lee el calendario de la liga y se baja día por día
+  const h = hoyKey(), desde = ymd(sumarDias(h,-80)), hasta = ymd(sumarDias(h,8));
+  const j = await getJSON(`${ESPN}${liga}/scoreboard`);
+  const fechas = new Set(), add = iso => { if (iso) fechas.add(String(iso).slice(0,10).replace(/-/g,'')); };
+  // Torneos UEFA dan rangos de meses (fase de liga, octavos...): se revisa cada día del rango que cae en la ventana
+  const aFecha = k => new Date(k.slice(0,4) + '-' + k.slice(4,6) + '-' + k.slice(6,8) + 'T12:00:00Z');
+  const rango = (a, b) => { if (!a) return; if (!b){ add(a); return; }
+    const ini = String(a).slice(0,10).replace(/-/g,''), fin = String(b).slice(0,10).replace(/-/g,'');
+    const d0 = ini > desde ? ini : desde, d1 = fin < hasta ? fin : hasta; if (d0 > d1) return;
+    for (let d = aFecha(d0); d <= aFecha(d1); d.setUTCDate(d.getUTCDate() + 1)) add(d.toISOString()); };
+  const cal = ((j.leagues || [])[0] || {}).calendar || [];
+  cal.forEach(c => { if (typeof c === 'string') add(c); else { rango(c.startDate, c.endDate); (c.entries || []).forEach(e => rango(e.startDate, e.endDate)); } });
+  const dias = [...fechas].filter(d => d >= desde && d <= hasta).sort();
+  const eventos = new Map(); (j.events || []).map(e => parseEvento(e, liga)).filter(Boolean).forEach(p => eventos.set(p.id, p));
+  // Los días ya terminados no cambian: se guardan en el celular y no se vuelven a pedir a ESPN
+  const cerrado = ymd(sumarDias(h, -2)), pedir = [];
+  dias.forEach(d => { const c = d <= cerrado ? lsGet('dr_d_' + liga + '_' + d) : null;
+    if (c) c.forEach(p => eventos.set(p.id, p)); else pedir.push(d); });
+  let fallas = 0;
+  await pool(pedir, 10, async d => {
+    try {
+      const r = await getJSON(`${ESPN}${liga}/scoreboard?dates=${d}`);
+      const ps = (r.events || []).map(e => parseEvento(e, liga)).filter(Boolean);
+      ps.forEach(p => eventos.set(p.id, p));
+      if (d <= cerrado && ps.every(p => p.estado === 'post' || p.estado === 'canc')) lsSet('dr_d_' + liga + '_' + d, ps.map(p => Object.assign({}, p, {stats:null})));
+    } catch(e){ fallas++; }
+  }, (n, t) => { S.progreso = `Bajando ${nombreLiga(liga)} ${n}/${t}…`; const e = $('#progreso'); if (e) e.textContent = S.progreso; });
+  if (pedir.length && fallas === pedir.length && !eventos.size) throw new Error('ESPN no respondió');
+  const lista = [...eventos.values()];
+  lista.forEach(guardar);
+  lsSet(key, {t:Date.now(), p:lista});
+  S.cargadas[liga] = true;
+}
+async function statsDeResumen(p){
+  const j = await getJSON(`${ESPN}${p.liga}/summary?event=${p.id}`);
+  const ts = (j.boxscore && j.boxscore.teams) || [];
+  const f = id => { const t = ts.find(x => x.team && String(x.team.id) === String(id)); return t ? leerStats(t.statistics) : null; };
+  const sl = f(p.local.id), sv = f(p.visita.id);
+  if (sl && sv){ p.stats = {local:sl, visita:sv}; lsSet('dr_st_' + p.id, p.stats); }
+  else p.sinStats = true;
+}
+function ultimos(id, n, antes){
+  return [...S.partidos.values()]
+    .filter(p => p.estado === 'post' && (p.local.id === id || p.visita.id === id) && (!antes || p.fecha < antes))
+    .sort((a,b) => b.fecha.localeCompare(a.fecha)).slice(0, n);
+}
+async function asegurarStats(ids){
+  const pend = new Set();
+  ids.forEach(id => ultimos(id, N_ULTIMOS + 2).forEach(p => { if (!p.stats && !p.sinStats) pend.add(p); }));
+  if (!pend.size) return;
+  await pool([...pend], 12, p => statsDeResumen(p).catch(() => { p.sinStats = true; }), (h,t) => {
+    S.progreso = `Bajando estadísticas ${h}/${t}…`; const e = $('#progreso'); if (e) e.textContent = S.progreso;
+  });
+  S.progreso = '';
+}
+async function prepararLiga(liga){
+  await cargarLiga(liga);
+  if (liga.startsWith('uefa.')) await Promise.all(APOYO.map(l => cargarLiga(l).catch(() => {})));
+}
+function proyeccionDe(p){
+  if (p._pub) return p._pub;
+  const pl = perfilEquipo(ultimos(p.local.id, N_ULTIMOS, p.fecha), p.local.id);
+  const pv = perfilEquipo(ultimos(p.visita.id, N_ULTIMOS, p.fecha), p.visita.id);
+  const L = promedioLiga(S.partidos.values(), p.liga);
+  return {pr: proyectar(pl, pv, L), pl, pv, L};
+}
+function partidosDelDia(liga, dia){
+  return [...S.partidos.values()]
+    .filter(p => (liga === 'todas' ? LIGAS.some(l => l.id === p.liga) : p.liga === liga) && fmtDia(new Date(p.fecha)) === dia)
+    .sort((a,b) => a.fecha.localeCompare(b.fecha));
+}
+function visible(p){ return true; }
+
+/* ---------- PUBLICACIÓN: el admin baja de ESPN y publica; los usuarios solo leen lo publicado ---------- */
+const aplicarJornada = j => { if (j) j.partidos.forEach(e => S.partidos.set(e.id, Object.assign({}, e, {_pub:{pr:e.pr, pl:e.pl, pv:e.pv}}))); };
+const pidiendo = {};
+function pedirJornada(dia){
+  if (!pidiendo[dia]) pidiendo[dia] = db.collection('jornadas').doc(dia).get().then(doc => {
+    const j = doc.exists ? doc.data() : null;
+    S.jornadas[dia] = j; aplicarJornada(j);
+    lsSet('dr_j_' + dia, j ? {t:j.actualizado, j} : null);
+    return j;
+  }).finally(() => { delete pidiendo[dia]; });
+  return pidiendo[dia];
+}
+async function leerJornada(dia){
+  if (dia in S.jornadas){ aplicarJornada(S.jornadas[dia]); return; }
+  const c = lsGet('dr_j_' + dia);
+  if (c && c.j){
+    // Se muestra lo guardado en el celular y se revisa en segundo plano si hay una versión más nueva
+    S.jornadas[dia] = c.j; aplicarJornada(c.j);
+    pedirJornada(dia).then(j => { if (j && j.actualizado !== c.t && S.dia === dia && S.vista === 'partidos'){ S.partidos.forEach((p, id) => { if (p._pub && fmtDia(new Date(p.fecha)) === dia) S.partidos.delete(id); }); aplicarJornada(j); render(); } }).catch(() => {});
+    return;
+  }
+  await pedirJornada(dia);
+}
+async function leerEstadoPub(dia){
+  if (DEMO || dia in S.estadoPub) return;
+  try { const doc = await db.collection('jornadas').doc(dia).get();
+    S.estadoPub[dia] = doc.exists ? {t:doc.data().actualizado, n:(doc.data().partidos || []).length} : null; }
+  catch(e){ S.estadoPub[dia] = null; }
+}
+async function publicarDia(){
+  const dia = S.dia; S.cargando = true; S.progreso = 'Bajando las 8 ligas de ESPN…'; render();
+  try {
+    await Promise.all(LIGAS.map(l => prepararLiga(l.id).catch(() => {})));
+    const ps = partidosDelDia('todas', dia);
+    const ids = new Set(); ps.forEach(p => { ids.add(p.local.id); ids.add(p.visita.id); });
+    await asegurarStats([...ids]);
+    const recorta = pf => ({at:pf.at, df:pf.df, ap:pf.ap, dp:pf.dp, n:pf.n,
+      ult: pf.ult.slice(0, 8).map(u => ({rival:{nombre:u.rival.nombre, logo:u.rival.logo}, local:u.local, tiros:u.tiros, puerta:u.puerta, contra:u.contra, contraP:u.contraP}))});
+    const partidos = ps.map(p => { const {pr, pl, pv} = proyeccionDe(p);
+      return {id:p.id, liga:p.liga, fecha:p.fecha, estado:p.estado, detalle:p.detalle, local:p.local, visita:p.visita, pr, pl:recorta(pl), pv:recorta(pv)}; });
+    const data = JSON.parse(JSON.stringify({dia, actualizado:new Date().toISOString(), partidos}));
+    if (DEMO) alert('Modo demo: se publicarían ' + partidos.length + ' partidos');
+    else { await db.collection('jornadas').doc(dia).set(data);
+      await refResumen().set({jornadasPend: firebase.firestore.FieldValue.arrayUnion(dia)}, {merge:true}); }
+    S.estadoPub[dia] = {t:data.actualizado, n:partidos.length};
+  } catch(e){ alert('No se pudo publicar: ' + e.message); }
+  finally { S.cargando = false; render(); }
+}
+function barraPublicar(){
+  const e = S.estadoPub[S.dia];
+  const txt = DEMO ? 'Modo demo' : e === undefined ? 'Revisando…' : e ? `Publicado ${horaMx(e.t)} · ${e.n} partidos` : 'Este día no está publicado';
+  return `<div class="bloque" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px">
+    <div><div class="lbl">Lo que ven tus usuarios</div><div style="font-weight:700">${esc(txt)}</div></div>
+    <button class="btn chico" onclick="publicarDia()">${e ? 'Actualizar' : 'Publicar día'}</button></div>`;
+}
+
+/* ---------- 6. VISTAS ---------- */
+function logoChico(url, px){
+  const m = /^https?:\/\/a\.espncdn\.com(\/i\/teamlogos\/[^?]+\.png)/.exec(url || '');
+  return m ? `https://a.espncdn.com/combiner/i?img=${m[1]}&w=${px}&h=${px}` : url;
+}
+function escudo(eq, tam){
+  const cls = 'logo' + (tam === 'g' ? ' g' : tam === 'm' ? ' m' : '');
+  const px = tam === 'g' ? 144 : tam === 'm' ? 48 : 96;
+  if (eq.logo) return `<img class="${cls}" src="${esc(logoChico(eq.logo, px))}" alt="" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${esc(eq.logo)}'}else{this.outerHTML='${placaTxt(eq, tam)}'}">`;
+  return placaHtml(eq, tam);
+}
+function placaHtml(eq, tam){ return `<span class="placa${tam === 'm' ? ' m' : tam === 'g' ? ' g' : ''}" style="background:#${esc(eq.color)};color:#${esc(eq.alt)}">${tam === 'm' ? '' : esc(eq.abrev)}</span>`; }
+function placaTxt(eq, tam){ return placaHtml(eq, tam).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+const HEX = (t, anim) => `<svg width="${t}" height="${t}" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="${anim ? 9 : 7}" fill="#4a1220"/><circle ${anim ? 'class="traza"' : ''} cx="20" cy="20" r="16.5" fill="none" stroke="#fbf8f3" stroke-width="${anim ? 1.4 : 1.8}"/><g ${anim ? 'class="letraD"' : ''} font-family="Archivo, Arial, sans-serif" font-weight="700" font-style="italic" text-anchor="middle"><text x="20" y="19" font-size="9.6" fill="#fbf8f3">DICA</text><text x="20" y="28.4" font-size="9.6" fill="#d4af6a">REM</text></g></svg>`;
+const GIRA = (t) => `<svg class="gira" width="${t || 18}" height="${t || 18}" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="rgba(212,175,106,.25)" stroke-width="6"/><path d="M26 4a22 22 0 0 1 22 22" fill="none" stroke="#d4af6a" stroke-width="6" stroke-linecap="round"/></svg>`;
+
+function animarCuentas(){
+  const els = [...document.querySelectorAll('[data-cuenta]')];
+  if (!els.length || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+  const fin = els.map(e => +e.dataset.cuenta), t0 = performance.now();
+  const paso = () => {
+    const t = Math.min(1, (performance.now() - t0) / 850), k = 1 - Math.pow(1 - t, 3);
+    els.forEach((e, i) => { e.textContent = Math.round(fin[i] * k); });
+    if (t < 1) requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
+}
+
+function render(){
+  clearInterval(S._tk);
+  const app = $('#app'), A = !!S._anim; S._anim = false; S._A = A;
+  const demo = DEMO ? '<div class="demo">MODO DEMO · conecta Firebase para activar usuarios y suscripciones</div>' : '';
+  const nombre = S.perfil && S.perfil.nombre ? S.perfil.nombre : (S.usuario ? S.usuario.email : '');
+  let cuerpo = '';
+  if (S.vista === 'detalle' && S.detalle) cuerpo = vistaDetalle();
+  else if (S.vista === 'picks') cuerpo = vistaPicks();
+  else if (S.vista === 'admin') cuerpo = vistaAdmin();
+  else if (S.vista === 'record') cuerpo = vistaRecord();
+  else cuerpo = vistaPartidos();
+  app.innerHTML = `${demo}
+  <header class="vidrio"><div class="top">
+    <div class="marca">${HEX(30)}<span>DICA <b>REMATES</b></span></div>
+    <div class="usuario"><span>${esc(nombre)}${S.perfil && S.perfil.vence && !S.perfil.equipo ? ' · vence ' + esc(S.perfil.vence) : ''}</span>
+      ${DEMO ? '' : '<button onclick="salir()">Salir</button>'}</div>
+  </div></header>
+  <div class="wrap">${cuerpo}<div class="firma">By: Ricardo Dionicio · datos de ESPN · las proyecciones son estimaciones, no garantías · v14</div></div>
+  <nav class="vidrio"><div class="in">
+    <button class="${S.vista==='partidos'||S.vista==='detalle'?'on':''}" onclick="ir('partidos')">Partidos</button>
+    ${S.esAdmin ? `<button class="${S.vista==='picks'?'on':''}" onclick="ir('picks')">Picks</button>` : ''}
+    <button class="${S.vista==='record'?'on':''}" onclick="ir('record')">Récord</button>
+    ${S.esAdmin ? `<button class="${S.vista==='admin'?'on':''}" onclick="ir('admin')">Admin</button>` : ''}
+  </div></nav>`;
+  if (A) requestAnimationFrame(animarCuentas);
+}
+function chipsLigas(){
+  const ls = [{id:'todas', n:'Todas'}].concat(LIGAS);
+  return `<div class="chips">${ls.map(l => `<button class="chip ${S.liga===l.id?'on':''}" onclick="elegirLiga('${l.id}')">${esc(l.n)}</button>`).join('')}</div>`;
+}
+function chipsDias(){
+  const h = hoyKey(), dias = [];
+  for (let i = -1; i <= 6; i++) dias.push(sumarDias(h, i));
+  return `<div class="chips dias">${dias.map(d => { const [a,b] = etiquetaDia(d);
+    return `<button class="chip ${S.dia===d?'on':''}" onclick="elegirDia('${d}')">${esc(a)}<small>${esc(b)}</small></button>`; }).join('')}</div>`;
+}
+function vistaPartidos(){
+  const A = S._A;
+  let html = chipsLigas() + chipsDias() + (S.esAdmin ? barraPublicar() : '');
+  if (S.cargando) return html + `<div class="estado" id="progreso">${GIRA()} ${esc(S.progreso || 'Cargando partidos…')}</div>`;
+  if (S.error) return html + `<div class="estado" style="flex-direction:column">No se pudieron cargar los datos de ESPN (${esc(S.error)}).<button class="btn sec" onclick="recargar()">Reintentar</button></div>`;
+  if (!S.esAdmin && !S.jornadas[S.dia]) return html + '<div class="estado">Aún no hay proyecciones publicadas para este día.</div>';
+  const ps = partidosDelDia(S.liga, S.dia);
+  if (!ps.length) return html + `<div class="estado">No hay partidos ${S.liga==='todas'?'':'de ' + esc(nombreLiga(S.liga)) + ' '}este día.</div>`;
+  let mejor = null;
+  ps.forEach(p => { if (p.estado !== 'pre') return; const {pr} = proyeccionDe(p), s = lineaSegura(pr.total.tiros, DISP_T);
+    if (s && pr.muestra >= 3 && (!mejor || s.prob > mejor.s.prob)) mejor = {p, s}; });
+  if (mejor){ const p = mejor.p, s = mejor.s;
+    html += `<div class="pickdia vidrio${A ? ' sube' : ''}">
+      <span class="lbl oro">Línea más segura del día · ${esc(nombreLiga(p.liga))} · ${esc(horaMx(p.fecha))}</span>
+      <span class="grande brillo">MÁS DE ${s.linea}</span>
+      <span>Remates · ${esc(p.local.nombre)} vs ${esc(p.visita.nombre)}</span>
+      <div class="fila-btns"><button class="btn" onclick="abrir('${p.id}')">Ver partido</button><span class="pct pulso">${pct(s.prob)}</span></div>
+    </div>`; }
+  return html + `<div class="lista vidrio">${ps.map((p, i) => filaPartido(p, i, A)).join('')}</div>`;
+}
+function filaPartido(p, i, A){
+  const {pr} = proyeccionDe(p), sT = lineaSegura(pr.total.tiros, DISP_T), sP = lineaSegura(pr.total.puerta, DISP_P);
+  const g = `${esc(p.local.goles)}-${esc(p.visita.goles)}`;
+  const hora = p.estado === 'in' ? `<i class="vivo"></i>En vivo ${g}` : p.estado === 'post' ? `Final ${g}` : p.estado === 'canc' ? 'Pospuesto' : esc(horaMx(p.fecha));
+  const liga = S.liga === 'todas' ? ` · ${esc(nombreLiga(p.liga))}` : '';
+  return `<button class="fila${A ? ' sube' : ''}" style="animation-delay:${i * 60}ms" onclick="abrir('${p.id}')">
+    <span class="fcol"><span class="fhora${p.estado === 'in' ? ' envivo' : ''}">${hora}${liga}</span>
+      <span class="feq">${escudo(p.local, 'm')}${esc(p.local.nombre)}</span>
+      <span class="feq">${escudo(p.visita, 'm')}${esc(p.visita.nombre)}</span></span>
+    <span class="fnum"><span class="lbl">Remates</span><b class="oro">${sT ? '+' + sT.linea : '–'}</b><small>${sT ? pct(sT.prob) : ''}</small></span>
+    <span class="fnum"><span class="lbl">A puerta</span><b>${sP ? '+' + sP.linea : '–'}</b><small>${sP ? pct(sP.prob) : ''}</small></span>
+  </button>`;
+}
+function chipLinea(lbl, s, prin){
+  return `<div class="linea ${prin ? 'prin' : ''}"><div class="lbl">${lbl}</div><div class="num">${s ? '+' + s.linea : '–'} <small>${s ? pct(s.prob) : ''}</small></div></div>`;
+}
+const segTxt = s => s ? `+${s.linea} <small>${pct(s.prob)}</small>` : '–';
+function vistaDetalle(){
+  const A = S._A, p = S.partidos.get(S.detalle);
+  const volver = `<button class="volver" onclick="ir('partidos')">‹ Partidos</button>`;
+  if (!p) return volver;
+  if (S.cargando) return volver + `<div class="estado" id="progreso">${GIRA()} ${esc(S.progreso || 'Cargando estadísticas…')}</div>`;
+  const {pr, pl, pv} = proyeccionDe(p);
+  const tipo = S.tipoDet || 'tt', esT = tipo === 'tt';
+  const sT = lineaSegura(pr.total.tiros, DISP_T), sP = lineaSegura(pr.total.puerta, DISP_P);
+  const marcador = (p.estado === 'post' || p.estado === 'in') ? `<span class="vs mar">${esc(p.local.goles)}-${esc(p.visita.goles)}</span>` : '<span class="vs">VS</span>';
+  const caja = (t, s, j) => { const n = s ? Math.round(s.prob * 100) : 0;
+    return `<div><div class="lbl oro">${t} · 70%+</div><div class="enorme">${s ? '+' + s.linea : '–'}</div><div class="sub"><b class="oro" data-cuenta="${n}">${n}</b><b class="oro">%</b> · justa ${j}</div></div>`; };
+  const hero = `<div class="herod vidrio${A ? ' entra' : ''}">
+    <div class="lbl oro">${esc(nombreLiga(p.liga))} · ${esc(fechaCorta(p.fecha))} · ${esc(horaMx(p.fecha))}</div>
+    <div class="eqs"><span class="eq">${escudo(p.local, 'g')}<span>${esc(p.local.nombre)}</span></span>${marcador}<span class="eq">${escudo(p.visita, 'g')}<span>${esc(p.visita.nombre)}</span></span></div>
+    <div class="dos">${caja('Remates', sT, Math.floor(pr.total.tiros) + 0.5)}${caja('A puerta', sP, Math.floor(pr.total.puerta) + 0.5)}</div>
+  </div>`;
+  const real = p.stats ? `<div class="aviso" style="color:var(--cal);background:rgba(212,175,106,.1);border-color:var(--linea)">Resultado real: ${p.stats.local.tiros + p.stats.visita.tiros} remates · ${(p.stats.local.puerta||0) + (p.stats.visita.puerta||0)} a puerta</div>` : '';
+  const pocos = pr.muestra < 4 ? `<div class="aviso">Hay pocos partidos con datos de uno de los equipos (${pr.muestra}). Toma esta proyección con cautela.</div>` : '';
+  const ms = mercados(pr, p.local.nombre, p.visita.nombre), m = ms.find(x => x.clave === tipo);
+  const cl = esT ? ['tt', 'tl', 'tv'] : ['pt', 'pl', 'pv'];
+  S._detAll = {total: ms.find(x => x.clave === cl[0]), local: ms.find(x => x.clave === cl[1]), visita: ms.find(x => x.clave === cl[2])};
+  S._detNom = {local: p.local.nombre, visita: p.visita.nombre, tipo: esT ? 'remates' : 'a puerta'};
+  const quien = S.casaQuien || 'total';
+  const barras = m.filas.map((f, i) => { const alta = f.mas >= .6;
+    return `<div class="pb"><span>Más ${f.linea}</span><span class="pista"><i class="${A ? 'crece' : ''}" style="width:${pct(f.mas)};background:${alta ? 'var(--oro)' : 'rgba(205,188,175,.45)'};animation-delay:${i * 60}ms"></i></span><b style="color:${alta ? 'var(--oro)' : 'var(--cal)'}">${pct(f.mas)}</b></div>`; }).join('');
+  const graf = (eq, perfil, muEq, muTot) => {
+    const disp = esT ? DISP_T : DISP_P, sE = lineaSegura(muEq, disp), sT2 = lineaSegura(muTot, disp);
+    const Le = sE ? sE.linea : 0, Lt = sT2 ? sT2.linea : 0;
+    const vals = ((perfil && perfil.ult) || []).slice(0, 8).map(u => {
+      const own = esT ? u.tiros : u.puerta, riv = esT ? u.contra : u.contraP;
+      return {own, riv: riv == null ? null : riv, tot: (own != null && riv != null) ? own + riv : null, rival: u.rival, local: u.local};
+    }).filter(v => v.own != null).reverse();
+    if (!vals.length) return `<div class="nota" style="margin:8px 0">${esc(eq.nombre)}: sin partidos con estadísticas todavía.</div>`;
+    const conTot = vals.filter(v => v.tot != null);
+    const max = Math.max(...vals.map(v => v.tot != null ? v.tot : v.own), Lt, Le) + 2, H = 110;
+    const sobreE = vals.filter(v => v.own > Le).length, sobreT = conTot.filter(v => v.tot > Lt).length;
+    const prom = arr => arr.length ? f1(arr.reduce((x, y) => x + y, 0) / arr.length) : '–';
+    return `<div class="graf"><div class="gtit">${escudo(eq, 'm')}${esc(eq.nombre)}</div>
+      <div class="resumen"><span><b class="oro">${prom(vals.map(v => v.own))}</b> ellos</span><span><b>${prom(conTot.map(v => v.riv))}</b> su rival</span><span><b>${prom(conTot.map(v => v.tot))}</b> el partido</span></div>
+      <div class="barras" style="height:${H + 20}px"><span class="guia" style="bottom:${Math.round(Le / max * H)}px"></span>${conTot.length ? `<span class="guia g2" style="bottom:${Math.round(Lt / max * H)}px"></span>` : ''}
+      ${vals.map((v, i) => `<span class="bcol"><small>${v.tot != null ? v.tot : v.own}</small><span class="pila ${A ? 'alza' : ''}" style="animation-delay:${i * 50}ms">${v.riv != null ? `<i style="height:${Math.round(v.riv / max * H)}px;background:rgba(205,188,175,.32)"></i>` : ''}<i style="height:${Math.round(v.own / max * H)}px;background:${v.own > Le ? 'var(--oro)' : 'rgba(212,175,106,.5)'}"></i></span></span>`).join('')}</div>
+      <div class="leyenda"><span><i style="background:var(--oro)"></i>Ellos</span><span><i style="background:rgba(205,188,175,.4)"></i>Rival</span><span><i class="ln"></i>Ellos +${Le}</span>${conTot.length ? `<span><i class="ln l2"></i>Partido +${Lt}</span>` : ''}</div>
+      <div class="nota">${esc(eq.nombre)} superó +${Le} en <b class="oro">${sobreE} de ${vals.length}</b>${conTot.length ? ` · el partido superó +${Lt} en <b style="color:var(--cal)">${sobreT} de ${conTot.length}</b>` : ''}</div>
+      <details class="pxp"><summary>Ver partido por partido</summary>
+        ${vals.slice().reverse().map(v => `<div class="pxpf"><span>vs ${esc(v.rival ? v.rival.nombre : '')} <em>${v.local ? 'L' : 'V'}</em></span><span><b class="oro">${v.own}</b> ellos</span><span>${v.riv != null ? v.riv : '–'} rival</span><span><b>${v.tot != null ? v.tot : '–'}</b> total</span></div>`).join('')}
+      </details>
+      ${!conTot.length && !esT ? `<div class="nota" style="margin-top:6px">Los remates a puerta del rival aparecerán cuando se vuelva a publicar este día.</div>` : ''}
+    </div>`;
+  };
+  return volver + hero + pocos + real + `<div class="bloque${A ? ' sube' : ''}" style="animation-delay:120ms">
+    <div class="seg2"><button class="${esT ? 'on' : ''}" onclick="verTipo('tt')">Remates</button><button class="${!esT ? 'on' : ''}" onclick="verTipo('pt')">A puerta</button></div>
+    <h3>Probabilidad por línea</h3><div class="nota">Promedio esperado: ${f1(m.mu)} ${esT ? 'remates' : 'a puerta'}</div>${barras}
+    <h3>Por equipo · 70%+</h3>
+    <table><tr><th style="text-align:left">Equipo</th><th>Remates</th><th>A puerta</th></tr>
+      <tr><td style="text-align:left">${esc(p.local.nombre)}</td><td class="seg">${segTxt(lineaSegura(pr.local.tiros, DISP_T))}</td><td class="seg">${segTxt(lineaSegura(pr.local.puerta, DISP_P))}</td></tr>
+      <tr><td style="text-align:left">${esc(p.visita.nombre)}</td><td class="seg">${segTxt(lineaSegura(pr.visita.tiros, DISP_T))}</td><td class="seg">${segTxt(lineaSegura(pr.visita.puerta, DISP_P))}</td></tr></table>
+    <h3>Compara con tu casa</h3>
+    <div class="seg2 quien">${[['total', 'Partido'], ['local', p.local.nombre], ['visita', p.visita.nombre]].map(([q, n]) => `<button class="${quien === q ? 'on' : ''}" onclick="verQuien('${q}', this)">${esc(n)}</button>`).join('')}</div>
+    <div class="casa"><label for="casa" id="casa-lbl">${esc(etiquetaCasa(quien))}</label><input id="casa" inputmode="decimal" placeholder="ej. ${Math.floor(S._detAll[quien].mu) + 0.5}" oninput="compararCasa(this.value)"></div>
+    <div id="comp"></div>
+    <h3>Últimos partidos</h3>${graf(p.local, pl, esT ? pr.local.tiros : pr.local.puerta, esT ? pr.total.tiros : pr.total.puerta)}${graf(p.visita, pv, esT ? pr.visita.tiros : pr.visita.puerta, esT ? pr.total.tiros : pr.total.puerta)}
+  </div>
+  ${S.esAdmin ? `<div class="fila-btns"><button class="btn" onclick="imagenPartido('${p.id}')">Imagen para redes</button></div>` : ''}`;
+}
+function verTipo(t){ S.tipoDet = t; S._anim = true; render(); }
+function etiquetaCasa(q){
+  const N = S._detNom || {};
+  return `Línea de ${N.tipo || 'remates'} ${q === 'total' ? 'del partido' : 'de ' + (N[q] || '')} que te dan`;
+}
+function verQuien(q, btn){
+  S.casaQuien = q;
+  [...btn.parentNode.children].forEach(b => b.classList.toggle('on', b === btn));
+  const d = S._detAll && S._detAll[q], i = $('#casa');
+  $('#casa-lbl').textContent = etiquetaCasa(q);
+  if (d && i){ i.placeholder = 'ej. ' + (Math.floor(d.mu) + 0.5); compararCasa(i.value); }
+}
+function compararCasa(v){
+  const el = $('#comp'), d = S._detAll && S._detAll[S.casaQuien || 'total']; if (!el || !d) return;
+  const n = parseFloat(String(v).replace(',', '.'));
+  if (!(n > 0)){ el.innerHTML = ''; return; }
+  const pM = probMas(d.mu, d.disp, n), pN = 1 - pM, req = 0.524, hay = pM > req || pN > req;
+  const valor = pM > req ? `Más tiene valor a -110 (+${((pM - req) * 100).toFixed(1)}%)` : pN > req ? `Menos tiene valor a -110 (+${((pN - req) * 100).toFixed(1)}%)` : 'Sin valor a -110';
+  if (!el.querySelector('.split')) el.innerHTML = '<div class="split"><span style="width:50%"></span><span></span></div><div class="valor"></div>';
+  const [a, b] = el.querySelector('.split').children, val = el.querySelector('.valor');
+  a.style.width = Math.max(18, Math.min(82, Math.round(pM * 100))) + '%'; a.textContent = 'Más ' + pct(pM); b.textContent = 'Menos ' + pct(pN);
+  val.textContent = valor; val.style.color = hay ? 'var(--verde)' : 'var(--cal2)';
+}
+
+/* ---------- 7. PICKS E IMÁGENES (solo admin) ---------- */
+function picksPublicados(dia){
+  return S.resumen ? S.resumen.recientes.filter(x => x.dia === dia).sort((a,b) => a.fecha.localeCompare(b.fecha)) : [];
+}
+function etiquetaRes(x){
+  if (x.estado === 'g') return '✓'; if (x.estado === 'p') return '✗'; if (x.estado === 'nd') return 's/d';
+  return Date.parse(x.fecha) > Date.now() ? horaMx(x.fecha) : 'en juego';
+}
+function listaPicks(lista, publicados){
+  return '<div class="bloque">' + lista.map(k => `<div class="pick">
+      <div class="q">${esc(k.texto)}</div>
+      ${publicados ? `<div class="res ${k.estado}">${esc(etiquetaRes(k))}</div>` : `<div class="p">${pct(k.prob)}</div>`}
+      <div class="s">${esc(k.partido)} · ${esc(nombreLiga(k.liga))} · ${esc(horaMx(k.fecha))} · ${pct(k.prob)}${k.mu != null ? ' · proy. ' + f1(k.mu) : ''}${k.real != null ? ' · salieron ' + k.real : ''}</div></div>`).join('') + '</div>';
+}
+function vistaPicks(){
+  let html = chipsDias();
+  if (S.cargando) return html + `<div class="estado" id="progreso">${esc(S.progreso || 'Cargando…')}</div>`;
+  const pub = picksPublicados(S.dia), gen = S.picks && S.picks.dia === S.dia ? S.picks.lista : null;
+  if (gen){
+    html += `<div class="aviso">Estos picks todavía NO están publicados${pub.length ? `; al publicarlos reemplazan a los ${pub.length} que ya tenías` : ''}.</div>
+      <div class="fila-btns">${gen.length ? '<button class="btn" onclick="publicarPicks()">Publicar picks</button>' : ''}<button class="btn sec" onclick="descartarPicks()">Descartar</button></div>`;
+    return html + (gen.length ? listaPicks(gen, false) : '<div class="estado">No hay partidos pendientes con datos suficientes ese día.</div>');
+  }
+  if (pub.length){
+    const c = (S.resumen.dias || {})[S.dia] || {};
+    html += `<div class="bloque" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px">
+      <div><div class="lbl">Picks publicados</div><div style="font-weight:700">${pub.length} picks · ${c.g || 0}-${c.p || 0}${c.pend ? ` · ${c.pend} pendientes` : ''}</div></div></div>
+      <div class="fila-btns"><button class="btn sec" onclick="imagenPicks()">Imagen para redes</button><button class="btn sec" onclick="generarPicks()">Volver a generar</button></div>`;
+    return html + listaPicks(pub, true);
+  }
+  return html + `<div class="fila-btns"><button class="btn" onclick="generarPicks()">Generar picks del día</button></div>
+    <div class="estado">${DEMO ? 'En modo demo los picks no se guardan.' : 'Aún no hay picks publicados para este día.'}</div>`;
+}
+function descartarPicks(){ S.picks = null; render(); }
+async function cargarPicksVista(){
+  if (DEMO || S.resumen) return render();
+  S.cargando = true; render();
+  try { const snap = await refResumen().get(); S.resumen = snap.exists ? Object.assign(vacioResumen(), snap.data()) : vacioResumen(); }
+  catch(e){}
+  S.cargando = false; if (S.vista === 'picks') render();
+}
+async function generarPicks(){
+  S.cargando = true; S.progreso = 'Cargando las 8 ligas…'; render();
+  try {
+    await Promise.all(LIGAS.map(l => prepararLiga(l.id).catch(() => {})));
+    const ps = partidosDelDia('todas', S.dia).filter(p => p.estado === 'pre');
+    const ids = new Set(); ps.forEach(p => { ids.add(p.local.id); ids.add(p.visita.id); });
+    await asegurarStats([...ids]);
+    const lista = [];
+    ps.forEach(p => {
+      const {pr} = proyeccionDe(p); if (pr.muestra < 3) return;
+      const nom = p.local.nombre + ' vs ' + p.visita.nombre;
+      const sT = lineaSegura(pr.total.tiros, DISP_T, .72), sP = lineaSegura(pr.total.puerta, DISP_P, .72);
+      const base = {id:p.id, lid:p.local.id, vid:p.visita.id, partido:nom, liga:p.liga, fecha:p.fecha};
+      if (sT) lista.push(Object.assign({texto:`Más de ${sT.linea} remates`, tipo:'tt', linea:sT.linea, prob:sT.prob, mu:pr.total.tiros}, base));
+      if (sP) lista.push(Object.assign({texto:`Más de ${sP.linea} remates a puerta`, tipo:'pt', linea:sP.linea, prob:sP.prob, mu:pr.total.puerta}, base));
+    });
+    lista.sort((a,b) => a.fecha.localeCompare(b.fecha));
+    S.picks = {dia:S.dia, lista};
+  } finally { S.cargando = false; render(); }
+}
+function lienzo(alto){
+  const c = document.createElement('canvas'); c.width = 1080; c.height = alto; const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 0, alto); g.addColorStop(0, '#4a1220'); g.addColorStop(.55, '#1c070d'); g.addColorStop(1, '#060205');
+  x.fillStyle = g; x.fillRect(0, 0, 1080, alto);
+  x.strokeStyle = 'rgba(212,175,106,.55)'; x.lineWidth = 3; x.strokeRect(40, 40, 1000, alto - 80);
+  x.beginPath(); x.ellipse(540, alto - 230, 430, 150, 0, 0, Math.PI * 2); x.strokeStyle = 'rgba(212,175,106,.18)'; x.lineWidth = 3; x.stroke();
+  x.fillStyle = '#fbf8f3'; x.font = '500 92px Jost'; x.textAlign = 'center';
+  x.fillText('DICA', 370, 180); x.fillStyle = '#d4af6a'; x.fillText('REMATES', 660, 180);
+  return [c, x];
+}
+function pie(x, alto){ x.fillStyle = 'rgba(251,248,243,.75)'; x.font = '500 34px Archivo'; x.textAlign = 'center'; x.fillText('By: Ricardo Dionicio', 540, alto - 100); }
+function descargar(c, nombre){
+  try { c.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = nombre; a.click(); }); }
+  catch(e){ alert('No se pudo generar la imagen: ' + e.message); }
+}
+async function imagenPicks(){
+  await document.fonts.ready;
+  const lista = (S.picks && S.picks.dia === S.dia) ? S.picks.lista : picksPublicados(S.dia);
+  const n = Math.min(lista.length, 10), alto = 360 + n*110 + 160;
+  const [c, x] = lienzo(alto);
+  const [a, b] = etiquetaDia(S.dia);
+  x.fillStyle = '#fbf8f3'; x.font = '700 46px Jost'; x.fillText(`Picks de remates · ${a} ${b}`, 540, 250);
+  lista.slice(0, n).forEach((k, i) => {
+    const y = 340 + i*110; x.textAlign = 'left';
+    x.fillStyle = '#fbf8f3'; x.font = '700 40px Archivo'; x.fillText(k.texto, 110, y);
+    x.fillStyle = 'rgba(251,248,243,.7)'; x.font = '600 30px Archivo'; x.fillText(`${k.partido} · ${horaMx(k.fecha)}`, 110, y + 40);
+    x.textAlign = 'right'; x.fillStyle = '#d4af6a'; x.font = '700 72px Jost'; x.fillText(pct(k.prob), 970, y + 20);
+  });
+  pie(x, alto); descargar(c, `dica-remates-picks-${S.dia}.png`);
+}
+async function imagenPartido(id){
+  await document.fonts.ready;
+  const p = S.partidos.get(id), {pr} = proyeccionDe(p), alto = 1350;
+  const [c, x] = lienzo(alto);
+  const cargar = src => new Promise(r => { if (!src) return r(null); const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => r(im); im.onerror = () => r(null); im.src = src; });
+  const [il, iv] = await Promise.all([cargar(p.local.logo), cargar(p.visita.logo)]);
+  const dibujar = (conLogos) => {
+    const [c2, y] = conLogos ? [c, x] : lienzo(alto);
+    y.textAlign = 'center'; y.fillStyle = 'rgba(251,248,243,.75)'; y.font = '700 42px Jost';
+    y.fillText(`${nombreLiga(p.liga)} · ${fechaCorta(p.fecha)} · ${horaMx(p.fecha)}`, 540, 250);
+    if (conLogos){ if (il) y.drawImage(il, 190, 300, 200, 200); if (iv) y.drawImage(iv, 690, 300, 200, 200); }
+    y.fillStyle = '#fbf8f3'; y.font = '700 44px Archivo';
+    y.fillText(p.local.nombre, 290, 560); y.fillText(p.visita.nombre, 790, 560);
+    y.font = '700 90px Jost'; y.fillStyle = 'rgba(251,248,243,.6)'; y.fillText('vs', 540, 430);
+    const L = s => s ? '+' + s.linea : '–', P = s => s ? pct(s.prob) : '';
+    const fila = (ytxt, etiqueta, a, t, b) => {
+      y.fillStyle = 'rgba(251,248,243,.75)'; y.font = '600 32px Archivo'; y.fillText(etiqueta, 540, ytxt - 110);
+      y.font = '700 96px Jost'; y.fillStyle = '#fbf8f3'; y.fillText(L(a), 230, ytxt); y.fillText(L(b), 850, ytxt);
+      y.fillStyle = '#d4af6a'; y.font = '700 140px Jost'; y.fillText(L(t), 540, ytxt);
+      y.font = '700 44px Jost'; y.fillStyle = 'rgba(251,248,243,.8)';
+      y.fillText(P(a), 230, ytxt + 55); y.fillText(P(t), 540, ytxt + 55); y.fillText(P(b), 850, ytxt + 55);
+    };
+    fila(790, 'REMATES · LÍNEA 70%+', lineaSegura(pr.local.tiros, DISP_T), lineaSegura(pr.total.tiros, DISP_T), lineaSegura(pr.visita.tiros, DISP_T));
+    fila(1070, 'A PUERTA · LÍNEA 70%+', lineaSegura(pr.local.puerta, DISP_P), lineaSegura(pr.total.puerta, DISP_P), lineaSegura(pr.visita.puerta, DISP_P));
+    pie(y, alto); return c2;
+  };
+  let lista = dibujar(true);
+  try { lista.toDataURL(); } catch(e){ lista = dibujar(false); } // si los logos bloquean la imagen, se hace sin logos
+  descargar(lista, `dica-remates-${p.local.abrev}-${p.visita.abrev}.png`);
+}
+
+/* ---------- RÉCORD (usuarios y admin) Y REVISIÓN DEL MODELO (solo admin) ---------- */
+const CAL_BUCKETS = ['50-59','60-69','70-79','80-89','90+'];
+const bucketDe = pr => pr < .6 ? '50-59' : pr < .7 ? '60-69' : pr < .8 ? '70-79' : pr < .9 ? '80-89' : '90+';
+const refResumen = () => db.collection('historial').doc('resumen');
+const refModelo = () => db.collection('modelo').doc('resumen');
+const vacioResumen = () => ({dias:{}, recientes:[], jornadasPend:[]});
+const vacioModelo = () => ({n:0, sAbsT:0, sT:0, nP:0, sAbsP:0, sP:0, ligas:{}, cal:{}, ultimos:[]});
+const TERMINADO_MS = 2.5*3600e3;
+const limpio = o => JSON.parse(JSON.stringify(o));
+
+function contarDia(R, dia){
+  const c = {g:0, p:0, nd:0, pend:0};
+  R.recientes.filter(x => x.dia === dia).forEach(x => { c[x.estado] = (c[x.estado] || 0) + 1; });
+  R.dias[dia] = c;
+}
+async function statsPartido(x){
+  const prev = S.partidos.get(String(x.id));
+  if (prev && prev.stats) return prev.stats;
+  const c = lsGet('dr_st_' + x.id); if (c) return c;
+  const p = {id:String(x.id), liga:x.liga, local:{id:String(x.lid)}, visita:{id:String(x.vid)}};
+  try { await statsDeResumen(p); } catch(e){}
+  return p.stats || null;
+}
+async function publicarPicks(){
+  if (!S.picks || !S.picks.lista.length) return;
+  if (DEMO) return alert('Modo demo: no se guardan picks');
+  const dia = S.picks.dia;
+  try {
+    const snap = await refResumen().get(), R = Object.assign(vacioResumen(), snap.exists ? snap.data() : {});
+    const items = S.picks.lista.map(k => ({dia, id:k.id, liga:k.liga, lid:k.lid, vid:k.vid, fecha:k.fecha, partido:k.partido,
+      texto:k.texto, tipo:k.tipo, linea:k.linea, prob:k.prob, mu:k.mu, estado:'pend', real:null}));
+    R.recientes = R.recientes.filter(x => x.dia !== dia).concat(items).sort((a,b) => b.fecha.localeCompare(a.fecha)).slice(0, 400);
+    contarDia(R, dia); R.actualizado = new Date().toISOString();
+    await refResumen().set(limpio(R));
+    S.resumen = R; S.picks = null; render(); alert('Picks publicados: ' + items.length + '. Ya quedan guardados y se calificarán solos cuando terminen los partidos.');
+  } catch(e){ alert('No se pudieron publicar los picks: ' + e.message); }
+}
+function sumarModelo(M, e, st){
+  const rt = st.local.tiros + st.visita.tiros, et = rt - e.pr.total.tiros;
+  M.n++; M.sAbsT += Math.abs(et); M.sT += et;
+  const L = M.ligas[e.liga] = M.ligas[e.liga] || {n:0, sAbsT:0, sT:0};
+  L.n++; L.sAbsT += Math.abs(et); L.sT += et;
+  const rp = (st.local.puerta != null && st.visita.puerta != null) ? st.local.puerta + st.visita.puerta : null;
+  if (rp != null){ const ep = rp - e.pr.total.puerta; M.nP++; M.sAbsP += Math.abs(ep); M.sP += ep; }
+  mercados(e.pr, '', '').filter(m => m.clave === 'tt' || m.clave === 'pt').forEach(m => {
+    const real = m.clave === 'tt' ? rt : rp; if (real == null) return;
+    m.filas.forEach(f => {
+      const sobre = f.mas >= .5, pr = sobre ? f.mas : 1 - f.mas, k = bucketDe(pr);
+      const b = M.cal[k] = M.cal[k] || {n:0, g:0, sp:0};
+      b.n++; b.sp += pr; if (sobre === (real > f.linea)) b.g++;
+    });
+  });
+  M.ultimos = [{partido:e.local.nombre + ' vs ' + e.visita.nombre, liga:e.liga, fecha:e.fecha, mu:e.pr.total.tiros, real:rt}].concat(M.ultimos || []).slice(0, 30);
+}
+let calificando = false;
+async function calificar(){
+  if (DEMO || !S.esAdmin || calificando) return; calificando = true;
+  try {
+    const snap = await refResumen().get(), R = Object.assign(vacioResumen(), snap.exists ? snap.data() : {});
+    const ahora = Date.now(), tocados = new Set(); let cambios = false;
+    for (const x of R.recientes){
+      if (x.estado !== 'pend' || ahora - Date.parse(x.fecha) < TERMINADO_MS) continue;
+      const st = await statsPartido(x); let real = null;
+      if (st) real = x.tipo === 'pt'
+        ? (st.local.puerta != null && st.visita.puerta != null ? st.local.puerta + st.visita.puerta : null)
+        : st.local.tiros + st.visita.tiros;
+      if (real != null){ x.real = real; x.estado = real > x.linea ? 'g' : 'p'; }
+      else if (ahora - Date.parse(x.fecha) > 3*86400e3) x.estado = 'nd'; // sin dato después de 3 días: no cuenta
+      else continue;
+      tocados.add(x.dia); cambios = true;
+    }
+    tocados.forEach(d => contarDia(R, d));
+    // Revisión del modelo: días publicados cuyos partidos ya terminaron
+    const msnap = await refModelo().get(), M = Object.assign(vacioModelo(), msnap.exists ? msnap.data() : {});
+    let mcambios = false; const quedan = [];
+    for (const dia of (R.jornadasPend || [])){
+      const jd = await db.collection('jornadas').doc(dia).get();
+      if (!jd.exists){ cambios = true; continue; }
+      const ps = (jd.data().partidos || []).filter(e => e.estado === 'pre');
+      if (ps.some(e => ahora - Date.parse(e.fecha) < TERMINADO_MS)){ quedan.push(dia); continue; }
+      for (const e of ps){
+        const st = await statsPartido({id:e.id, liga:e.liga, lid:e.local.id, vid:e.visita.id});
+        if (st){ sumarModelo(M, e, st); mcambios = true; }
+      }
+      cambios = true;
+    }
+    R.jornadasPend = quedan;
+    if (mcambios){ M.actualizado = new Date().toISOString(); await refModelo().set(limpio(M)); S.modelo = M; }
+    if (cambios){ R.actualizado = new Date().toISOString(); await refResumen().set(limpio(R)); }
+    S.resumen = R;
+  } catch(e){ console.warn('calificar', e); }
+  finally { calificando = false; }
+}
+async function cargarRecord(){
+  if (DEMO){ S.cargando = false; render(); return; }
+  S.cargando = true; S.error = null; render();
+  try {
+    if (S.esAdmin) await calificar();
+    const snap = await refResumen().get(); S.resumen = snap.exists ? Object.assign(vacioResumen(), snap.data()) : null;
+    if (S.esAdmin){ const m = await refModelo().get(); S.modelo = m.exists ? m.data() : null; }
+  } catch(e){ S.error = e.message; }
+  S.cargando = false; if (S.vista === 'record') render();
+}
+function sumaDias(R, desde, hasta){
+  let g = 0, p = 0;
+  Object.entries(R.dias || {}).forEach(([d, c]) => { if (d >= desde && d <= hasta){ g += c.g || 0; p += c.p || 0; } });
+  return {g, p};
+}
+function cajaRecord(t, r){
+  const tot = r.g + r.p;
+  return `<div><div class="lbl">${t}</div><div class="num">${r.g}-${r.p}</div><div class="nota">${tot ? pct(r.g/tot) : '—'}</div></div>`;
+}
+function vistaRecord(){
+  if (S.cargando) return '<div class="estado">Cargando récord…</div>';
+  if (DEMO) return '<div class="bloque estado">En modo demo no hay récord.</div>';
+  if (S.error) return `<div class="estado">No se pudo cargar el récord (${esc(S.error)}).</div>`;
+  const R = S.resumen, h = hoyKey(); let html = '';
+  if (!R || !R.recientes.length) html += '<div class="bloque estado">Aún no hay picks publicados.</div>';
+  else {
+    html += `<div class="bloque"><h3>Récord DICA</h3><div class="grid4">
+      ${cajaRecord('Ayer', sumaDias(R, sumarDias(h,-1), sumarDias(h,-1)))}${cajaRecord('7 días', sumaDias(R, sumarDias(h,-7), h))}
+      ${cajaRecord('30 días', sumaDias(R, sumarDias(h,-30), h))}${cajaRecord('Total', sumaDias(R, '', '9'))}</div>
+      <div class="nota" style="margin-top:8px">Picks DICA calificados con los remates reales de ESPN. Los "s/d" no traían datos y no cuentan.</div></div>`;
+    const dias = [...new Set(R.recientes.map(x => x.dia))].sort().reverse().slice(0, 14);
+    html += dias.map(d => {
+      const its = R.recientes.filter(x => x.dia === d).sort((a,b) => a.fecha.localeCompare(b.fecha)), c = R.dias[d] || {}, [a, b] = etiquetaDia(d);
+      return `<div class="bloque"><h3>${esc(a)} ${esc(b)} <span class="nota">· ${c.g || 0}-${c.p || 0}${c.pend ? ` · ${c.pend} pendientes` : ''}</span></h3>
+        ${its.map(x => `<div class="pick"><div class="q">${esc(x.texto)}</div>
+          <div class="res ${x.estado}">${esc(etiquetaRes(x))}</div>
+          <div class="s">${esc(x.partido)} · ${esc(nombreLiga(x.liga))} · ${pct(x.prob)}${x.real != null ? ' · salieron ' + x.real : ''}</div></div>`).join('')}</div>`;
+    }).join('');
+  }
+  if (S.esAdmin) html += `<div class="fila-btns"><button class="btn" onclick="cargarRecord()">Calificar ahora</button>
+    ${R && R.recientes.length ? '<button class="btn sec" onclick="imagenRecord()">Imagen para redes</button>' : ''}</div>` + vistaModelo();
+  return html;
+}
+function vistaModelo(){
+  const M = S.modelo;
+  if (!M || !M.n) return '<div class="bloque"><h3>Revisión del modelo · solo tú</h3><div class="estado">Aún no hay días publicados con partidos terminados para revisar.</div></div>';
+  const sesgo = v => (v >= 0 ? '+' : '') + f1(v);
+  const filasCal = CAL_BUCKETS.filter(b => M.cal[b] && M.cal[b].n).map(b => { const c = M.cal[b];
+    return `<tr><td>${b}%</td><td>${pct(c.sp/c.n)}</td><td class="${Math.abs(c.g/c.n - c.sp/c.n) <= .06 ? 'seg' : ''}">${pct(c.g/c.n)}</td><td>${c.n}</td></tr>`; }).join('');
+  const filasLiga = Object.entries(M.ligas).map(([l, v]) =>
+    `<tr><td style="text-align:left">${esc(nombreLiga(l))}</td><td>${v.n}</td><td>${f1(v.sAbsT/v.n)}</td><td>${sesgo(v.sT/v.n)}</td></tr>`).join('');
+  return `<div class="bloque"><h3>Revisión del modelo · solo tú</h3>
+    <div class="grid2"><div><div class="lbl">Error promedio remates</div><div class="num">${f1(M.sAbsT/M.n)}</div><div class="nota">sesgo ${sesgo(M.sT/M.n)} · ${M.n} partidos</div></div>
+      <div><div class="lbl">Error promedio a puerta</div><div class="num" style="color:var(--cal)">${M.nP ? f1(M.sAbsP/M.nP) : '–'}</div><div class="nota">sesgo ${M.nP ? sesgo(M.sP/M.nP) : '–'}</div></div></div>
+    <div class="nota" style="margin-bottom:10px">Sesgo + : salieron más remates de los que esperaba el modelo. Sesgo − : salieron menos.</div>
+    <div class="lbl" style="margin-bottom:4px">¿Las probabilidades se cumplen?</div>
+    <table><tr><th>Rango</th><th>Dijimos</th><th>Salió</th><th>Líneas</th></tr>${filasCal}</table>
+    <div class="nota" style="margin:6px 0 12px">Si "Salió" queda cerca de "Dijimos", el modelo está bien calibrado (en amarillo).</div>
+    <table><tr><th style="text-align:left">Liga</th><th>Partidos</th><th>Error</th><th>Sesgo</th></tr>${filasLiga}</table>
+    <div class="lbl" style="margin:12px 0 4px">Últimos partidos revisados</div>
+    <table><tr><th style="text-align:left">Partido</th><th>Esperaba</th><th>Salieron</th></tr>
+      ${(M.ultimos || []).slice(0, 10).map(u => `<tr><td style="text-align:left">${esc(u.partido)}</td><td>${f1(u.mu)}</td><td>${u.real}</td></tr>`).join('')}</table></div>`;
+}
+async function imagenRecord(){
+  await document.fonts.ready;
+  const R = S.resumen, h = hoyKey(), ayer = sumarDias(h, -1);
+  const its = R.recientes.filter(k => k.dia === ayer && (k.estado === 'g' || k.estado === 'p')).slice(0, 8);
+  const alto = 700 + its.length*100 + 120;
+  const [c, x] = lienzo(alto);
+  x.fillStyle = '#fbf8f3'; x.font = '700 50px Jost'; x.textAlign = 'center'; x.fillText('Récord de picks', 540, 245);
+  const caja = (t, r, cx) => { const tot = r.g + r.p; x.textAlign = 'center';
+    x.fillStyle = 'rgba(251,248,243,.75)'; x.font = '600 30px Archivo'; x.fillText(t, cx, 320);
+    x.fillStyle = '#d4af6a'; x.font = '700 100px Jost'; x.fillText(`${r.g}-${r.p}`, cx, 420);
+    x.fillStyle = '#fbf8f3'; x.font = '700 46px Jost'; x.fillText(tot ? pct(r.g/tot) : '—', cx, 475); };
+  caja('AYER', sumaDias(R, ayer, ayer), 260); caja('7 DÍAS', sumaDias(R, sumarDias(h,-7), h), 540); caja('30 DÍAS', sumaDias(R, sumarDias(h,-30), h), 820);
+  its.forEach((k, i) => { const y = 590 + i*100;
+    x.textAlign = 'left'; x.fillStyle = '#fbf8f3'; x.font = '700 36px Archivo'; x.fillText(k.texto, 110, y);
+    x.fillStyle = 'rgba(251,248,243,.7)'; x.font = '600 28px Archivo'; x.fillText(`${k.partido} · salieron ${k.real}`, 110, y + 36);
+    x.textAlign = 'right'; x.fillStyle = k.estado === 'g' ? '#d4af6a' : '#f2a7a7'; x.font = '700 60px Archivo'; x.fillText(k.estado === 'g' ? '✓' : '✗', 970, y + 20); });
+  pie(x, alto); descargar(c, `dica-remates-record-${h}.png`);
+}
+
+/* ---------- 8. ADMIN DE USUARIOS ---------- */
+function vistaAdmin(){
+  if (DEMO) return '<div class="bloque"><h3>Usuarios</h3><p class="estado">En modo demo no hay usuarios. Pega la configuración de Firebase en el archivo para activar esta sección.</p></div>';
+  const h = hoyKey();
+  return `<div class="bloque"><h3>Agregar usuario</h3><div class="form">
+      <input id="u-email" type="email" placeholder="Gmail del usuario">
+      <input id="u-nombre" placeholder="Nombre">
+      <input id="u-pass" placeholder="Contraseña (mínimo 6)" autocomplete="new-password">
+      <input id="u-vence" type="date" value="${sumarDias(h,30)}">
+      <label><input id="u-equipo" type="checkbox" style="width:auto"> Es de mi equipo (sin vencimiento)</label>
+      <button class="btn" onclick="agregarUsuario()">Guardar</button></div></div>
+    <div class="bloque"><h3>Usuarios (${S.usuarios.length})</h3>
+      ${S.usuarios.map(u => { const v = vencido(u);
+        return `<div class="usr"><div class="n">${esc(u.nombre || u.id)}
+          ${u.equipo ? '<span class="pill eq">Equipo</span>' : u.suspendido ? '<span class="pill no">Suspendido</span>' : v ? '<span class="pill no">Vencido</span>' : '<span class="pill ok">Activo</span>'}</div>
+          <div class="d">${esc(u.id)} · ${u.equipo ? 'sin vencimiento' : 'vence ' + esc(u.vence || '–')} · ${(u.dispositivos || []).length}/${MAX_DISP} dispositivos</div>
+          <div class="fila-btns" style="margin:0">
+            ${u.equipo ? '' : `<button class="btn chico" onclick="renovar('${esc(u.id)}',30)">+30 días</button>`}
+            <button class="btn chico sec" onclick="suspender('${esc(u.id)}',${!u.suspendido})">${u.suspendido ? 'Reactivar' : 'Suspender'}</button>
+            <button class="btn chico sec" onclick="reiniciarDisp('${esc(u.id)}')">Reiniciar dispositivos</button>
+          </div></div>`; }).join('') || '<div class="estado">Aún no hay usuarios.</div>'}
+    </div>
+    <div class="bloque"><h3>Configuración</h3><div class="form">
+      <label>WhatsApp para renovaciones</label><input id="c-wa" value="${esc(S.config.whatsapp)}">
+      <button class="btn" onclick="guardarConfig()">Guardar configuración</button></div></div>`;
+}
+let db, auth;
+async function agregarUsuario(){
+  const email = $('#u-email').value.trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return alert('Escribe un correo válido');
+  const equipo = $('#u-equipo').checked, pass = $('#u-pass').value;
+  if (pass && pass.length < 6) return alert('La contraseña debe tener al menos 6 caracteres');
+  if (pass){
+    // Se crea la cuenta con una segunda conexión para que tu sesión de admin no se cierre
+    const sec = firebase.apps.find(a => a.name === 'alta') || firebase.initializeApp(firebaseConfig, 'alta');
+    try { await sec.auth().createUserWithEmailAndPassword(email, pass); await sec.auth().signOut(); }
+    catch(e){ if (e.code !== 'auth/email-already-in-use') return alert(msjError(e)); alert('Ese correo ya tenía cuenta; se actualiza su suscripción con su contraseña actual.'); }
+  }
+  await db.collection('usuarios').doc(email).set({nombre: $('#u-nombre').value.trim(), vence: equipo ? null : $('#u-vence').value,
+    equipo, suspendido:false, dispositivos:[], creado: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+  alert('Usuario guardado: ' + email + (pass ? '\nContraseña: ' + pass : ''));
+  $('#u-email').value = ''; $('#u-nombre').value = ''; $('#u-pass').value = '';
+}
+async function renovar(email, dias){
+  const u = S.usuarios.find(x => x.id === email); const h = hoyKey();
+  const base = u && u.vence && u.vence > h ? u.vence : h;
+  await db.collection('usuarios').doc(email).update({vence: sumarDias(base, dias), suspendido:false});
+}
+async function suspender(email, s){ await db.collection('usuarios').doc(email).update({suspendido:s}); }
+async function reiniciarDisp(email){ if (confirm('¿Borrar los dispositivos registrados de ' + email + '?')) await db.collection('usuarios').doc(email).update({dispositivos:[]}); }
+async function guardarConfig(){
+  S.config.whatsapp = $('#c-wa').value.replace(/\D/g,'');
+  await db.collection('config').doc('app').set(S.config, {merge:true}); alert('Configuración guardada');
+}
+
+/* ---------- 9. NAVEGACIÓN ---------- */
+function ir(v){ S.vista = v; S._anim = true; render(); window.scrollTo(0,0); if (v === 'partidos') cargarVista(); if (v === 'record') cargarRecord(); if (v === 'picks') cargarPicksVista(); }
+function elegirLiga(l){ S.liga = l; cargarVista(); }
+function elegirDia(d){ S.dia = d; if (S.vista === 'picks') render(); else cargarVista(); }
+function recargar(){ Object.keys(S.cargadas).forEach(k => { delete S.cargadas[k]; try { localStorage.removeItem('dr_sb3_' + k); } catch(e){} }); cargarVista(); }
+async function abrir(id){
+  const p = S.partidos.get(id); S.detalle = id; S.vista = 'detalle'; S.tipoDet = 'tt'; S.casaQuien = 'total'; S._anim = true;
+  if (!S.esAdmin || p._pub){ render(); window.scrollTo(0,0); return; }
+  S.cargando = true; render(); window.scrollTo(0,0);
+  try { await asegurarStats([p.local.id, p.visita.id]); } finally { S.cargando = false; S._anim = true; render(); }
+}
+let turno = 0;
+async function cargarVista(){
+  const mio = ++turno; S.error = null; S.cargando = true; S.progreso = ''; render();
+  try {
+    if (!S.esAdmin){ await leerJornada(S.dia); if (mio === turno){ S.cargando = false; S._anim = true; render(); } return; }
+    leerEstadoPub(S.dia).then(() => { if (mio === turno && !S.cargando) render(); });
+    const ligas = S.liga === 'todas' ? LIGAS.map(l => l.id) : [S.liga];
+    await Promise.all(ligas.map(l => prepararLiga(l)));
+    if (mio !== turno) return;
+    const ps = partidosDelDia(S.liga, S.dia).filter(visible);
+    const ids = new Set(); ps.forEach(p => { ids.add(p.local.id); ids.add(p.visita.id); });
+    await asegurarStats([...ids]);
+  } catch(e){ S.error = e.message; }
+  if (mio === turno){ S.cargando = false; S._anim = true; render(); }
+}
+
+/* ---------- 10. ACCESO, DISPOSITIVOS Y PROTECCIÓN ---------- */
+function pantalla(titulo, texto, botones){
+  clearInterval(S._tk);
+  $('#app').innerHTML = `<div class="pantalla">
+    ${HEX(78, true)}
+    <div class="marca grande e1">DICA&nbsp;<b class="brillo">REMATES</b></div>
+    <div class="lema e2">SI ES DICA, ES EXCELENCIA</div>
+    ${titulo ? `<h2 class="e3">${esc(titulo)}</h2>` : ''}
+    ${texto ? `<p class="e3">${texto}</p>` : ''}
+    ${botones || ''}
+    <div class="firma">By: Ricardo Dionicio · GROUP DICA · v14</div></div>`;
+}
+const TICKER = [['8 ligas', 'Liga MX, Premier, LaLiga, Serie A, MLS y torneos UEFA'], ['Líneas .5', 'listas para comparar con tu casa de apuestas'], ['Récord real', 'cada pick se califica con los remates de ESPN']];
+function iniciarTicker(){
+  let i = 0;
+  const pinta = () => {
+    const v = $('#tk-v'), t = $('#tk-t'), p = $('#tk-p'); if (!v){ clearInterval(S._tk); return; }
+    v.textContent = TICKER[i][0]; t.textContent = TICKER[i][1];
+    [v, t].forEach(e => { e.classList.remove('sube'); void e.offsetWidth; e.classList.add('sube'); });
+    p.innerHTML = TICKER.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('');
+    i = (i + 1) % TICKER.length;
+  };
+  clearInterval(S._tk); pinta(); S._tk = setInterval(pinta, 2600);
+}
+function pantallaLogin(aviso){
+  pantalla('', '', `<div class="ticker e3" aria-live="polite"><b id="tk-v"></b><span id="tk-t"></span></div><div class="puntos e3" id="tk-p"></div>
+    ${aviso ? `<p class="aviso-login e3">${esc(aviso)}</p>` : ''}
+    <form class="login vidrio e4" id="f-login" onsubmit="iniciarSesion(event)" novalidate>
+      <label for="l-email">Correo</label>
+      <input id="l-email" type="email" autocomplete="username" placeholder="tucorreo@gmail.com">
+      <label for="l-pass">Contraseña</label>
+      <div class="pass"><input id="l-pass" type="password" autocomplete="current-password" placeholder="••••••••">
+        <button type="button" class="ojo" aria-label="Mostrar contraseña" onclick="verPass(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+      <div id="l-error" class="error" role="alert"></div>
+      <button class="btn" type="submit" id="l-btn">Entrar</button>
+      <button type="button" class="enlace" onclick="olvidePass()">Olvidé mi contraseña</button>
+    </form>`);
+  iniciarTicker();
+}
+function verPass(b){ const i = $('#l-pass'), ver = i.type === 'password'; i.type = ver ? 'text' : 'password'; b.setAttribute('aria-label', ver ? 'Ocultar contraseña' : 'Mostrar contraseña'); }
+function pantallaRenovar(titulo, texto){
+  pantalla(titulo, texto, `<a class="btn" style="text-decoration:none" href="${waLink()}" target="_blank" rel="noopener">Renovar por WhatsApp</a>
+    <button class="btn sec" onclick="salir()">Salir</button>`);
+}
+function marcaAgua(email){
+  const t = esc(email);
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='320' height='200'><text x='10' y='110' transform='rotate(-25 160 100)' font-family='Arial' font-size='16' fill='white'>${t}</text></svg>`;
+  $('#marca-agua').style.background = `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
+}
+function proteger(email){
+  document.body.classList.add('protegido'); marcaAgua(email);
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keyup', e => { if (e.key === 'PrintScreen'){ try { navigator.clipboard.writeText(''); } catch(_){} } });
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && ['p','s','c'].includes(e.key.toLowerCase())) e.preventDefault(); });
+}
+function entrar(){
+  S._ultAct = 0; marcarActividad();
+  S.dia = hoyKey();
+  const sigue = () => { S._anim = true; render(); cargarVista(); };
+  if (S._recien){
+    S._recien = false; const n = ((S.perfil && S.perfil.nombre) || '').split(' ')[0];
+    pantalla('', '', `<div class="bienv"><svg class="anillo" width="84" height="84" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="34" fill="#d4af6a"/><path class="check" d="M24 39 L34 49 L53 29" fill="none" stroke="#2a0c13" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="bt">Bienvenido${n ? ', ' + esc(n) : ''}</div></div>`);
+    setTimeout(sigue, 1200);
+  } else sigue();
+  if (S.esAdmin && !DEMO) setTimeout(calificar, 5000);
+  setInterval(() => { if (!S.esAdmin && (vencido(S.perfil) || (S.perfil && S.perfil.suspendido))) pantallaRenovar('Tu acceso venció', 'Tu suscripción a DICA REMATES terminó. Renueva para seguir viendo las proyecciones.'); }, 60e3);
+}
+const ERRORES = {
+  'auth/invalid-credential':'Correo o contraseña incorrectos.', 'auth/wrong-password':'Correo o contraseña incorrectos.',
+  'auth/user-not-found':'Correo o contraseña incorrectos.', 'auth/invalid-email':'Escribe un correo válido.',
+  'auth/too-many-requests':'Demasiados intentos. Espera unos minutos.', 'auth/network-request-failed':'Sin conexión a internet.',
+  'auth/email-already-in-use':'Ese correo ya tiene cuenta.', 'auth/weak-password':'La contraseña debe tener al menos 6 caracteres.'
+};
+const msjError = e => ERRORES[e.code] || ('Error: ' + e.message);
+async function iniciarSesion(ev){
+  if (ev) ev.preventDefault();
+  const email = $('#l-email').value.trim(), pass = $('#l-pass').value, err = $('#l-error'), btn = $('#l-btn'), f = $('#f-login');
+  const agita = m => { err.textContent = m; f.classList.remove('agita'); void f.offsetWidth; f.classList.add('agita'); };
+  err.textContent = '';
+  if (!email || !pass) return agita('Escribe tu correo y contraseña.');
+  lsSet('dr_act', Date.now()); S._ultAct = 0; S._recien = true;
+  btn.disabled = true; btn.innerHTML = `${GIRA()} Entrando…`;
+  try { await auth.signInWithEmailAndPassword(email, pass); }
+  catch(e){ S._recien = false; btn.disabled = false; btn.textContent = 'Entrar'; agita(msjError(e)); }
+}
+async function olvidePass(){
+  const email = $('#l-email').value.trim(), err = $('#l-error');
+  if (!email){ err.textContent = 'Escribe tu correo arriba y vuelve a tocar aquí.'; return; }
+  try { await auth.sendPasswordResetEmail(email); err.textContent = 'Te mandamos un correo para cambiar tu contraseña.'; }
+  catch(e){ err.textContent = msjError(e); }
+}
+function salir(){ lsSet('dr_act', null); if (auth) auth.signOut(); }
+const INACTIVO_MS = 30*60e3;
+function marcarActividad(){ const t = Date.now(); if (t - (S._ultAct || 0) > 15000){ S._ultAct = t; lsSet('dr_act', t); } }
+function revisarInactividad(){
+  if (DEMO || !S.usuario || !auth) return;
+  const u = lsGet('dr_act');
+  if (u && Date.now() - u > INACTIVO_MS){ S.porInactividad = true; lsSet('dr_act', null); auth.signOut(); }
+}
+function vigilarInactividad(){
+  ['pointerdown','keydown','touchstart','wheel','scroll'].forEach(ev => addEventListener(ev, marcarActividad, {passive:true, capture:true}));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) revisarInactividad(); });
+  addEventListener('focus', revisarInactividad);
+  setInterval(revisarInactividad, 30000);
+}
+
+async function arrancar(){
+  if (DEMO){
+    S.usuario = {email:ADMIN}; S.esAdmin = true; S.exento = true; S.perfil = {nombre:'Ricardo (demo)', equipo:true};
+    return entrar();
+  }
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth(); db = firebase.firestore();
+  vigilarInactividad();
+  auth.onAuthStateChanged(async user => {
+    if (!user){
+      S.usuario = null;
+      const aviso = S.porInactividad ? 'Tu sesión se cerró después de 30 minutos sin uso. Vuelve a entrar.' : '';
+      S.porInactividad = false;
+      return pantallaLogin(aviso);
+    }
+    const email = (user.email || '').toLowerCase();
+    // Si la app se quedó cerrada o sin usar más de 30 minutos, se pide entrar de nuevo
+    const ult = lsGet('dr_act');
+    if (!ult || Date.now() - ult > INACTIVO_MS){ S.porInactividad = !!ult; lsSet('dr_act', null); return auth.signOut(); }
+    S.usuario = user; S.esAdmin = email === ADMIN; S.exento = EXENTOS.includes(email);
+    pantalla('', '', `<div class="cargando">${GIRA(46)}<span>Verificando tu acceso…</span></div>`);
+    try {
+      const pCfg = db.collection('config').doc('app').get();
+      const pUsr = email === ADMIN ? null : db.collection('usuarios').doc(email).get();
+      if (email !== ADMIN && !lsGet('dr_j_' + hoyKey())) pedirJornada(hoyKey()).catch(() => {});
+      const cfg = await pCfg;
+      if (cfg.exists) S.config = Object.assign(S.config, cfg.data());
+      if (S.esAdmin){
+        S.perfil = {nombre:'Ricardo', equipo:true};
+        db.collection('usuarios').onSnapshot(q => { S.usuarios = q.docs.map(d => ({id:d.id, ...d.data()})); if (S.vista === 'admin') render(); });
+        return entrar();
+      }
+      const ref = db.collection('usuarios').doc(email), doc = await pUsr;
+      if (!doc.exists && !S.exento) return pantallaRenovar('Sin acceso', `La cuenta ${esc(email)} no tiene suscripción a DICA REMATES. Escríbeme para activarla.`);
+      S.perfil = doc.exists ? doc.data() : {nombre:email, equipo:true};
+      if (S.exento && !doc.exists) S.perfil.equipo = true;
+      if (S.perfil.suspendido) return pantallaRenovar('Cuenta suspendida', 'Tu acceso está suspendido. Escríbeme para reactivarlo.');
+      if (vencido(S.perfil)) return pantallaRenovar('Tu acceso venció', `Tu suscripción terminó el ${esc(S.perfil.vence)}. Renueva para seguir viendo las proyecciones.`);
+      if (!S.exento){
+        const dev = deviceId(), lista = S.perfil.dispositivos || [];
+        if (!lista.includes(dev)){
+          if (lista.length >= MAX_DISP) return pantallaRenovar('Límite de dispositivos', `Esta cuenta ya está activa en ${MAX_DISP} dispositivos. Si cambiaste de celular, escríbeme para liberarla.`);
+          await ref.update({dispositivos: firebase.firestore.FieldValue.arrayUnion(dev)});
+        }
+        proteger(email);
+      }
+      entrar();
+    } catch(e){ pantalla('Error', 'No se pudo verificar tu acceso: ' + esc(e.message), '<button class="btn sec" onclick="location.reload()">Reintentar</button>'); }
+  });
+}
+arrancar();
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
